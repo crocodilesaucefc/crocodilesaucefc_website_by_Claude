@@ -1,0 +1,60 @@
+/* ============================================================
+   CrocodileSauceFC — COLOR TOKENS
+   Dark-mode cinematic gaming portal palette.
+   ============================================================ */
+
+:root {
+  /* ---- Base / structural backgrounds ---- */
+  --csfc-bg-deep: #020617;      /* Deep Slate Blue — radial center */
+  --csfc-bg-black: #000000;     /* Absolute Black — viewport edges */
+  --csfc-bg-panel: #060b1a;     /* Flat fallback panel base */
+
+  /* ---- Blue-green / teal field (stadium low-poly base) ---- */
+  --csfc-teal-deep: #04141a;    /* deepest teal-slate */
+  --csfc-teal: #0a242b;         /* mid teal field */
+  --csfc-blue-green: #14323a;   /* lifted blue-green facet */
+  --csfc-navy: #0e1726;         /* name-card / panel navy fill */
+
+  /* ---- Accents ---- */
+  --csfc-copper: #b45309;       /* Burnished Copper — borders, frames */
+  --csfc-copper-bright: #ea9a2e;/* Vibrant glowing copper — hover frames */
+  --csfc-bronze: #f59e0b;       /* Polished Bronze — data, numerics */
+  --csfc-emerald: #15803d;      /* Forest/Emerald — action fills, hover */
+  --csfc-emerald-bright: #34d399;/* Emerald-400 — nav hover text */
+
+  /* ---- Text ---- */
+  --csfc-text-primary: #f8fafc; /* Slate White — high contrast */
+  --csfc-text-muted: #94a3b8;   /* Slate Gray — low contrast */
+
+  /* ---- Glass / translucency (alpha tokens) ---- */
+  --csfc-glass: rgb(9 22 30 / 0.78);     /* teal-navy glass */
+  --csfc-glass-hover: rgb(15 38 46 / 0.86);/* lifted teal glass */
+  --csfc-copper-30: rgb(180 83 9 / 0.30);/* dim copper border */
+  --csfc-copper-60: rgb(180 83 9 / 0.60);
+  --csfc-bronze-40: rgb(245 158 11 / 0.40);/* glow alpha */
+  --csfc-emerald-30: rgb(21 128 61 / 0.30);
+
+  /* ============================================================
+     SEMANTIC ALIASES
+     ============================================================ */
+  --surface-bg:
+    radial-gradient(ellipse at 60% 30%, rgb(20 50 58 / 0.55) 0%, rgb(4 20 26 / 0.85) 55%, rgb(2 8 11 / 0.96) 100%),
+    url('../assets/bg_lowpoly.jpg') center / cover fixed no-repeat,
+    var(--csfc-teal-deep);
+  --surface-bg-flat: linear-gradient(160deg, #0a242b, #04141a 70%, #020a0c);
+  --surface-panel: var(--csfc-navy);
+  --surface-glass: var(--csfc-glass);
+  --surface-glass-hover: var(--csfc-glass-hover);
+
+  --border-primary: var(--csfc-copper);
+  --border-primary-dim: var(--csfc-copper-30);
+  --border-primary-bright: var(--csfc-copper-bright);
+
+  --text-heading: var(--csfc-text-primary);
+  --text-body: var(--csfc-text-primary);
+  --text-muted: var(--csfc-text-muted);
+  --text-data: var(--csfc-bronze);
+
+  --action-fill: var(--csfc-emerald);
+  --action-text: var(--csfc-emerald-bright);
+}

@@ -1,0 +1,67 @@
+/* ============================================================
+   CrocodileSauceFC — BASE / RESET
+   Global defaults. Rounding banned; cinematic dark base.
+   ============================================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  border-radius: var(--radius-none); /* rounded corners BANNED globally */
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--surface-bg);
+  background-attachment: fixed;
+  color: var(--text-body);
+  font-family: var(--font-sans);
+  font-weight: var(--weight-light);
+  letter-spacing: var(--tracking-normal);
+  line-height: var(--leading-body);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--weight-bold);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
+  line-height: var(--leading-tight);
+  color: var(--text-heading);
+}
+
+p { margin: 0; }
+
+a {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color var(--duration) var(--ease-standard);
+}
+a:hover { color: var(--action-text); }
+
+code, kbd, samp {
+  font-family: var(--font-mono);
+  font-weight: var(--weight-bold);
+}
+
+::selection {
+  background: var(--csfc-emerald);
+  color: var(--csfc-text-primary);
+}
+
+/* Thin tactical scrollbar */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--csfc-bg-black); }
+::-webkit-scrollbar-thumb {
+  background: var(--csfc-copper-30);
+  border: 1px solid var(--csfc-copper);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--csfc-copper-60); }

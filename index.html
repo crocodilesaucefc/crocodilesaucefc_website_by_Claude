@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CrocodileSauceFC — Low-Poly United</title>
+
+<!-- ============================================================
+     CrocodileSauceFC — Single-page portal
+     Built on the CrocodileSauceFC Design System (bound under _ds/).
+     Swappable imagery lives in ./assets/  — drop in your own renders.
+     ============================================================ -->
+
+<!-- Design-system tokens + base + component styles -->
+<link rel="stylesheet" href="_ds/crocodilesaucefc-design-system-82dccd68-cf7f-4f47-a4ee-1d1ab498695e/tokens/fonts.css" />
+<link rel="stylesheet" href="_ds/crocodilesaucefc-design-system-82dccd68-cf7f-4f47-a4ee-1d1ab498695e/tokens/colors.css" />
+<link rel="stylesheet" href="_ds/crocodilesaucefc-design-system-82dccd68-cf7f-4f47-a4ee-1d1ab498695e/tokens/typography.css" />
+<link rel="stylesheet" href="_ds/crocodilesaucefc-design-system-82dccd68-cf7f-4f47-a4ee-1d1ab498695e/tokens/geometry.css" />
+<link rel="stylesheet" href="_ds/crocodilesaucefc-design-system-82dccd68-cf7f-4f47-a4ee-1d1ab498695e/tokens/effects.css" />
+<link rel="stylesheet" href="_ds/crocodilesaucefc-design-system-82dccd68-cf7f-4f47-a4ee-1d1ab498695e/tokens/base.css" />
+<link rel="stylesheet" href="_ds/crocodilesaucefc-design-system-82dccd68-cf7f-4f47-a4ee-1d1ab498695e/styles.css" />
+
+<link rel="icon" href="assets/logo_medallion.png" />
+
+<style>
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: #04141a;
+    color: var(--text-body);
+    overflow-x: hidden;
+  }
+  #app { position: relative; z-index: 1; min-height: 100vh; }
+
+  /* ---- Cinematic low-poly background stack ---- */
+  .bg-photo {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background: url('assets/bg_circuit.png') center / cover no-repeat;
+    filter: brightness(1.06) saturate(1.05);
+  }
+  .bg-grad {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background: radial-gradient(ellipse at 50% 26%, rgb(22 62 60 / 0.10) 0%, rgb(4 18 22 / 0.34) 48%, rgb(2 10 12 / 0.72) 80%, #000000 100%);
+  }
+  .vignette {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background: radial-gradient(ellipse at 50% 40%, transparent 58%, rgb(0 0 0 / 0.42) 100%);
+  }
+
+  /* ---- Hero floating mascot ---- */
+  @keyframes floaty { 0%,100% { transform: translateY(0) rotate(-0.4deg); } 50% { transform: translateY(-22px) rotate(0.4deg); } }
+  @keyframes floatyShadow { 0%,100% { transform: scaleX(1); opacity: 0.45; } 50% { transform: scaleX(0.84); opacity: 0.25; } }
+  @media (prefers-reduced-motion: reduce) {
+    .float-croc, .float-shadow { animation: none !important; }
+  }
+
+  /* ---- Section scaffolding ---- */
+  .section { position: relative; padding: 5rem 2.5rem; max-width: 1280px; margin: 0 auto; }
+  .eyebrow {
+    font-family: var(--font-display); font-size: 0.72rem; letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--csfc-bronze); margin-bottom: 0.6rem;
+  }
+  .anchor { scroll-margin-top: 90px; }
+
+  /* ---- Hero logo: keyed bronze nameboard ---- */
+  .logo-board { position: relative; display: inline-block; width: min(100%, 660px);
+    margin: 0 0 1.15rem; isolation: isolate; }
+  .logo-board > img { position: relative; z-index: 1; display: block; width: 100%; height: auto;
+    filter: drop-shadow(0 12px 26px rgb(0 0 0 / 0.6)) drop-shadow(0 2px 2px rgb(0 0 0 / 0.5)); }
+  .logo-board-back { position: absolute; z-index: 0; inset: 13% 4.5%; pointer-events: none;
+    background: radial-gradient(ellipse at 50% 50%, rgb(2 10 14 / 0.78) 0%, rgb(2 10 14 / 0.42) 62%, rgb(2 10 14 / 0) 100%);
+    filter: blur(7px); }
+
+  /* ---- Responsive layout grids (inline styles can't hold media queries) ---- */
+  .hero-grid { display: grid; grid-template-columns: 1.05fr 0.95fr; align-items: center; gap: 1rem; }
+  .hub-grid  { display: grid; grid-template-columns: 0.92fr 1.08fr; gap: 1.6rem; }
+  .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.9rem; }
+  .store-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; }
+  .about-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 3rem; align-items: center; }
+  .nav-links { display: flex; gap: 1.9rem; align-items: center; }
+  .nav-toggle { display: none; }
+
+  @media (max-width: 980px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+    .hero-shield-col { justify-self: center !important; margin-top: 0; max-width: 420px !important; }
+    .chef-stage { margin: 0 auto; }
+    .hub-grid { grid-template-columns: 1fr; }
+    .hub-col:first-child { border-right: none !important; padding-right: 0 !important;
+      border-bottom: 1px solid var(--csfc-copper-30); padding-bottom: 1.6rem; margin-bottom: 0.4rem; }
+    .about-grid { grid-template-columns: 1fr; }
+    .about-grid > div:last-child { order: -1; max-width: 280px; margin: 0 auto; }
+    .feature-grid { grid-template-columns: 1fr !important; gap: 1.8rem !important; }
+    .feature-grid > div:last-child { order: -1; }
+    .store-grid { grid-template-columns: repeat(3, 1fr); }
+    .nav-links {
+      position: absolute; top: 100%; right: 0; left: 0;
+      flex-direction: column; align-items: flex-start; gap: 1.1rem;
+      padding: 1.4rem 2.5rem;
+      background: rgb(4 18 24 / 0.97); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--csfc-copper-30);
+      transform: translateY(-8px); opacity: 0; pointer-events: none;
+      transition: all 0.25s var(--ease-standard);
+    }
+    .nav-links.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+    .nav-toggle { display: inline-flex; }
+    .footer-grid { grid-template-columns: 1fr 1fr !important; }
+  }
+  @media (max-width: 640px) {
+    .section { padding: 3.5rem 1.2rem; }
+    .hero-sec { padding: 1.5rem 1.2rem 3rem !important; min-height: auto !important; }
+    .gallery-grid { grid-template-columns: 1fr 1fr; gap: 0.7rem; }
+    .store-grid { grid-template-columns: 1fr 1fr; }
+    .stat-grid { grid-template-columns: 1fr 1fr !important; }
+    .header-pad { padding: 0.8rem 1.2rem !important; }
+    .hub-panel-pad { padding: 1.1rem !important; }
+    .footer-grid { grid-template-columns: 1fr !important; gap: 1.6rem !important; }
+    .hide-sm { display: none !important; }
+  }
+  @media (max-width: 420px) {
+    .gallery-grid, .store-grid { grid-template-columns: 1fr; }
+    .hero-stats { gap: 1.3rem !important; }
+  }
+</style>
+</head>
+<body>
+<div class="bg-photo"></div>
+<div class="bg-grad"></div>
+<div class="vignette"></div>
+<div id="app"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="_ds/crocodilesaucefc-design-system-82dccd68-cf7f-4f47-a4ee-1d1ab498695e/_ds_bundle.js"></script>
+
+<script type="text/babel" data-presets="react">
+
+const DS = window.CrocodileSauceFCDesignSystem_82dccd;
+const { Button, IconButton, NavLink, Tabs, GlassPanel, Badge, Tag, ScoreWidget, StatWidget, VideoTile } = DS;
+const A = 'assets/'; // swap any file in ./assets/ with your own render of the same name
+
+/* ----------------------------- Icons ----------------------------- */
+const Chevron = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="100%" height="100%"><path d="M9 6l6 6-6 6" /></svg>;
+const Play = () => <svg viewBox="0 0 24 24" fill="currentColor" width="100%" height="100%"><path d="M8 5v14l11-7z" /></svg>;
+const Ext = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" width="100%" height="100%"><path d="M7 17L17 7M17 7H8M17 7v9" /></svg>;
+const Share = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" width="100%" height="100%"><circle cx="18" cy="5" r="3" /><circle cx="6" cy="12" r="3" /><circle cx="18" cy="19" r="3" /><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4" /></svg>;
+const Menu = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" width="100%" height="100%"><path d="M4 7h16M4 12h16M4 17h16" /></svg>;
+
+/* ============================ HEADER ============================ */
+function Header() {
+  const links = ['Home', 'About', 'World Cup Hub', 'Viral Gallery', 'Store'];
+  const [active, setActive] = React.useState('Home');
+  const [open, setOpen] = React.useState(false);
+  const slug = (l) => '#' + l.toLowerCase().replace(/ /g, '-');
+  return (
+    <header className="header-pad" style={{
+      position: 'sticky', top: 0, zIndex: 60,
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      gap: '2rem', padding: '0.9rem 2.5rem',
+      background: 'linear-gradient(180deg, rgb(2 6 23 / 0.94), rgb(2 6 23 / 0.55))',
+      backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)',
+      borderBottom: '1px solid var(--csfc-copper-30)'
+    }}>
+      <a href="#home" onClick={() => setActive('Home')} style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', textDecoration: 'none' }}>
+        <img src={A + 'logo_medallion.png'} alt="CrocodileSauceFC crest" style={{ width: 46, height: 46, filter: 'drop-shadow(0 2px 6px rgb(0 0 0 / 0.6))' }} />
+        <img src={A + 'wordmark.png'} alt="Crocodile Sauce F.C." style={{ height: 26, width: 'auto', filter: 'drop-shadow(0 2px 5px rgb(0 0 0 / 0.55))' }} />
+      </a>
+
+      <nav className={'nav-links' + (open ? ' open' : '')}>
+        {links.map((l) =>
+        <NavLink key={l} href={slug(l)} active={active === l}
+        onClick={() => {setActive(l);setOpen(false);}}>{l}</NavLink>
+        )}
+        <span style={{ display: 'none' }} />
+      </nav>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.7rem' }}>
+        <span style={{ display: 'inline-block' }}><Button variant="cta" size="sm">Sign Up</Button></span>
+        <span className="nav-toggle" style={{ width: 42, height: 42 }}>
+          <IconButton label="Menu" variant="tactical" active={open} onClick={() => setOpen((o) => !o)}><Menu /></IconButton>
+        </span>
+      </div>
+    </header>);
+
+}
+
+/* ====================== HERO HUD SHIELD bits ====================== */
+function Flag({ a }) {
+  return <span style={{ width: 40, height: 40, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+    fontSize: '1.7rem', background: 'var(--metal-bronze)', clipPath: 'polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)',
+    boxShadow: '0 2px 8px rgb(0 0 0 / 0.5)', filter: 'var(--raise-3d)' }}>
+    <span style={{ filter: 'drop-shadow(0 1px 1px rgb(0 0 0 /.4))' }}>{a}</span></span>;
+}
+function StatRow({ label, value }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
+      padding: '0.5rem 0.4rem', background: 'rgb(3 14 18 / 0.6)',
+      border: '1px solid var(--csfc-copper-30)', clipPath: 'var(--clip-tag)', overflow: 'hidden' }}>
+      <span style={{ fontFamily: 'var(--font-display)', fontSize: '0.55rem', letterSpacing: '0.14em',
+        textTransform: 'uppercase', color: 'var(--csfc-text-muted)', whiteSpace: 'nowrap' }}>{label}</span>
+      <span className="csfc-data" style={{ fontSize: '1.15rem', whiteSpace: 'nowrap' }}>{value}</span>
+    </div>);
+
+}
+function Led({ style }) {return <span style={{ position: 'absolute', background: '#34d399', boxShadow: 'var(--led-emerald)', ...style }} />;}
+
+/* ===== CHEF — animated mocap studio viewport (hero centerpiece) ===== */
+function ChefStage() {
+  return (
+    <div className="chef-stage" style={{ position: 'relative', width: '100%', maxWidth: 420, justifySelf: 'end' }}>
+      <div style={{ position: 'relative',
+        borderStyle: 'solid', borderColor: 'transparent', borderWidth: 22,
+        borderImageSource: 'var(--frame-bronze-cham)', borderImageSlice: 120,
+        borderImageWidth: '22px', borderImageRepeat: 'stretch',
+        background: '#10181b',
+        filter: 'var(--cast-bronze) drop-shadow(0 20px 44px rgb(0 0 0 / 0.6))' }}>
+        <Led style={{ top: '10%', left: -2, width: 3, height: 50 }} />
+        <Led style={{ top: '10%', right: -2, width: 3, height: 50 }} />
+        <Led style={{ bottom: '10%', left: '26%', width: 60, height: 3 }} />
+        <Led style={{ bottom: '10%', right: '26%', width: 60, height: 3 }} />
+        <div style={{ position: 'relative', overflow: 'hidden', aspectRatio: '3 / 4',
+          boxShadow: 'var(--bevel-inset)' }}>
+          <video src={A + 'chef_animated.mp4'} poster={A + 'chef_poster.png'}
+          autoPlay loop muted playsInline
+          style={{ position: 'absolute', inset: 0, objectFit: 'cover', objectPosition: '50% 38%', width: "377px", height: "502px" }} />
+          {/* teal tint to fold the studio grey into the palette */}
+          <div style={{ position: 'absolute', inset: 0, background: 'var(--csfc-teal)', mixBlendMode: 'multiply', opacity: 0.5, pointerEvents: 'none' }} />
+          {/* spotlight vignette */}
+          <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none',
+            background: 'radial-gradient(ellipse at 50% 40%, transparent 28%, rgb(4 20 26 / 0.55) 72%, rgb(3 12 16 / 0.92) 100%)' }} />
+          {/* broadcast scanlines */}
+          <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.18,
+            background: 'repeating-linear-gradient(0deg, rgb(0 0 0 / 0.5) 0 1px, transparent 1px 3px)' }} />
+          {/* top status row */}
+          <div style={{ position: 'absolute', top: 12, left: 12, right: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <Badge tone="emerald" pulse>REC · Mocap Live</Badge>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6rem', color: 'var(--csfc-text-muted)', letterSpacing: '0.1em', background: 'rgb(2 6 23 / 0.6)', padding: '0.18rem 0.4rem', border: '1px solid var(--csfc-copper-30)' }}>CAM&nbsp;01</span>
+          </div>
+          {/* bottom nameplate */}
+          <div style={{ position: 'absolute', left: 14, right: 14, bottom: 14 }}>
+            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '1.15rem',
+              letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--csfc-text-primary)',
+              textShadow: '0 2px 10px rgb(0 0 0 / 0.9)' }}>“Chef”</div>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: '0.6rem', letterSpacing: '0.2em',
+              textTransform: 'uppercase', color: 'var(--csfc-bronze)', marginTop: 3 }}>Captain · No. 10</div>
+          </div>
+        </div>
+      </div>
+    </div>);
+
+}
+
+function HudShield() {
+  return (
+    <div style={{ position: 'relative',
+      borderStyle: 'solid', borderColor: 'transparent', borderWidth: 24,
+      borderImageSource: 'var(--frame-bronze-cham)', borderImageSlice: 120,
+      borderImageWidth: '24px', borderImageRepeat: 'stretch',
+      background: 'linear-gradient(180deg, rgb(8 26 32 / 0.97), rgb(4 16 21 / 0.97))',
+      filter: 'var(--cast-bronze) drop-shadow(0 18px 40px rgb(0 0 0 / 0.55))' }}>
+      <Led style={{ top: '14%', left: -2, width: 3, height: 46 }} />
+      <Led style={{ top: '14%', right: -2, width: 3, height: 46 }} />
+      <Led style={{ bottom: '12%', left: '24%', width: 56, height: 3 }} />
+      <Led style={{ bottom: '12%', right: '24%', width: 56, height: 3 }} />
+      <div style={{ position: 'relative', padding: '1.4rem 1.2rem 1.6rem', boxShadow: 'var(--bevel-inset)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.9rem' }}>
+          <Badge tone="emerald" pulse>Live · 67'</Badge>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6rem', color: 'var(--csfc-text-muted)', letterSpacing: '0.1em' }}>GRP&nbsp;A · MD3</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.9rem', marginBottom: '1.1rem' }}>
+          <Flag a="🇦🇷" />
+          <div style={{ textAlign: 'center', fontFamily: 'var(--font-display)', fontWeight: 700,
+            fontSize: '0.9rem', letterSpacing: '0.1em', color: 'var(--csfc-text-primary)', lineHeight: 1.3 }}>
+            ARGENTINA<br /><span style={{ color: 'var(--csfc-bronze)', fontSize: '0.7rem' }}>vs.</span><br />CANADA
+          </div>
+          <Flag a="🇨🇦" />
+        </div>
+        <div style={{ textAlign: 'center', fontFamily: 'var(--font-display)', fontSize: '0.7rem',
+          letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--csfc-bronze)', marginBottom: '0.9rem' }}>Live Match Stats</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.6rem' }}>
+          <StatRow label="Goals" value="2 – 1" />
+          <StatRow label="Possession" value="58–42" />
+          <StatRow label="Shots (OG)" value="14(7)" />
+          <StatRow label="Offsides" value="2 – 3" />
+        </div>
+        <div style={{ marginTop: '1.3rem', textAlign: 'center', fontFamily: 'var(--font-display)',
+          fontSize: '0.66rem', letterSpacing: '0.14em', textTransform: 'uppercase',
+          color: 'var(--csfc-emerald-bright)', textShadow: '0 0 8px rgb(52 211 153 / 0.5)' }}>Trending · Viral Clips</div>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', marginTop: '0.7rem' }}>
+          {[0, 1, 2].map((i) =>
+          <span key={i} style={{ width: 46, height: 26, background: 'rgb(3 14 18 / 0.7)',
+            border: '1px solid var(--csfc-emerald-30)', clipPath: 'var(--clip-button)',
+            boxShadow: '0 0 10px rgb(52 211 153 / 0.18) inset' }} />
+          )}
+        </div>
+      </div>
+    </div>);
+
+}
+
+/* ============================== HERO ============================== */
+function Hero() {
+  return (
+    <section id="home" className="anchor hero-sec" data-screen-label="Hero" style={{ position: 'relative', minHeight: '90vh', overflow: 'hidden',
+      padding: '2.5rem 2.5rem 4rem', maxWidth: 1280, margin: '0 auto' }}>
+      <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none',
+        background: 'radial-gradient(ellipse at 72% 8%, rgb(52 211 153 / 0.09), transparent 55%), radial-gradient(ellipse at 26% 88%, rgb(180 83 9 / 0.12), transparent 52%)' }} />
+
+      <div className="hero-grid" style={{ position: 'relative', zIndex: 2 }}>
+        {/* LEFT — copy */}
+        <div style={{ position: 'relative', zIndex: 2 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.7rem', marginBottom: '1.3rem', flexWrap: 'wrap' }}>
+            <Badge tone="emerald" pulse>2026 World Squad</Badge>
+            <Badge tone="bronze">Low-Poly United</Badge>
+          </div>
+          <h1 className="logo-board">
+            <span className="logo-board-back" aria-hidden="true"></span>
+            <img src={A + 'wordmark_board.png'} alt="Crocodile Sauce F.C." />
+          </h1>
+          <p className="csfc-body" style={{ fontSize: '1.12rem', maxWidth: '42ch', margin: '0 0 1.9rem' }}>
+            The most ferocious low-poly football squad on the planet. Live match HUDs, viral highlight reels, and the legendary "Solid Poly Blank" kit collection.
+          </p>
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', position: 'relative', zIndex: 2 }}>
+            <Button variant="cta" size="lg" iconRight={<Chevron />}>Watch Highlights</Button>
+            <Button variant="brand" size="lg">World Cup Hub</Button>
+          </div>
+          <div className="hero-stats" style={{ display: 'flex', gap: '2rem', marginTop: '2.4rem', flexWrap: 'wrap' }}>
+            {[['Matches', '11'], ['Goals', '34'], ['Clips', '208']].map(([k, v]) =>
+            <div key={k} style={{ display: 'flex', flexDirection: 'column' }}>
+                <span className="csfc-data" style={{ fontSize: '1.7rem' }}>{v}</span>
+                <span style={{ fontFamily: 'var(--font-display)', fontSize: '0.58rem', letterSpacing: '0.16em',
+                textTransform: 'uppercase', color: 'var(--csfc-text-muted)', marginTop: 2 }}>{k}</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* RIGHT — Chef, the animated mocap centerpiece */}
+        <div className="hero-shield-col" style={{ position: 'relative', zIndex: 3, justifySelf: 'end', width: '100%', maxWidth: 420 }}>
+          <ChefStage />
+        </div>
+      </div>
+    </section>);
+
+}
+
+/* ============================== ABOUT ============================== */
+function About() {
+  return (
+    <section id="about" className="section anchor about-grid" data-screen-label="About">
+      <GlassPanel clip="card" bracket padding="2.6rem">
+        <div className="eyebrow">Est. 2026 · Low-Poly United</div>
+        <h2 className="csfc-display-gradient" style={{ fontSize: '2.4rem', marginBottom: '1.1rem' }}>About The Squad</h2>
+        <p className="csfc-body" style={{ fontSize: '1.08rem', marginBottom: '1rem' }}>
+          CrocodileSauceFC is the world's first fully faceted football club — eleven low-poly reptiles forged in bronze and emerald, each carrying the signature hot-sauce crest into every World Cup fixture.
+        </p>
+        <p className="csfc-body" style={{ marginBottom: '1.7rem' }}>
+          We broadcast live tactical HUDs, drop viral highlight reels by the hour, and outfit the faithful in the "Solid Poly Blank" kit line.
+        </p>
+        <div style={{ display: 'flex', gap: '0.8rem', flexWrap: 'wrap' }}>
+          <Button variant="cta">Watch Highlights</Button>
+          <Button variant="ghost" iconRight={<Chevron />}>Meet the roster</Button>
+        </div>
+      </GlassPanel>
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <img src={A + 'hero_croc.png'} alt="Squad mascot" style={{ width: '100%', maxWidth: 360,
+          transform: 'scaleX(-1)', filter: 'drop-shadow(0 24px 36px rgb(0 0 0 / 0.55))', animation: 'floaty 7s ease-in-out infinite' }} className="float-croc" />
+      </div>
+    </section>);
+
+}
+
+/* ====================== MATCH HUB (glassmorphism) ====================== */
+function MatchHub() {
+  const [tab, setTab] = React.useState('live');
+  const data = {
+    live: [
+    { live: true, minute: "67'", home: { abbr: 'ARG', flag: '🇦🇷', score: 2 }, away: { abbr: 'CAN', flag: '🇨🇦', score: 1 } },
+    { live: true, minute: "54'", home: { abbr: 'BRA', flag: '🇧🇷', score: 0 }, away: { abbr: 'FRA', flag: '🇫🇷', score: 0 } }],
+
+    next: [
+    { minute: 'SAT 20:00', home: { abbr: 'POR', flag: '🇵🇹', score: '–' }, away: { abbr: 'ESP', flag: '🇪🇸', score: '–' } },
+    { minute: 'SUN 17:30', home: { abbr: 'ENG', flag: '🏴', score: '–' }, away: { abbr: 'GER', flag: '🇩🇪', score: '–' } }],
+
+    res: [
+    { minute: 'FT', home: { abbr: 'POR', flag: '🇵🇹', score: 3 }, away: { abbr: 'ESP', flag: '🇪🇸', score: 2 } },
+    { minute: 'FT', home: { abbr: 'NED', flag: '🇳🇱', score: 1 }, away: { abbr: 'ITA', flag: '🇮🇹', score: 1 } }]
+
+  };
+  return (
+    <section id="world-cup-hub" className="section anchor" data-screen-label="Match Hub">
+      <div style={{ textAlign: 'center', marginBottom: '2.4rem' }}>
+        <div className="eyebrow">Match Hub</div>
+        <h2 className="csfc-display-gradient" style={{ fontSize: 'clamp(2rem, 4vw, 3rem)' }}>World Cup Command</h2>
+      </div>
+
+      {/* Featured live match — the scoreboard shield, relocated from the hero */}
+      <div className="feature-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 0.85fr', gap: '2.4rem', alignItems: 'center', marginBottom: '2.6rem' }}>
+        <div>
+          <div className="eyebrow" style={{ color: 'var(--csfc-emerald-bright)' }}>Featured · Live Now</div>
+          <h3 className="csfc-display" style={{ fontSize: 'clamp(1.5rem, 3vw, 2.1rem)', margin: '0 0 0.8rem' }}>Argentina vs Canada</h3>
+          <p className="csfc-body" style={{ fontSize: '1.04rem', marginBottom: '1.5rem', maxWidth: '44ch' }}>
+            Group A, Matchday 3. The squad is up a goal at the hour mark — follow every facet of the action on the live tactical HUD.
+          </p>
+          <div style={{ display: 'flex', gap: '0.8rem', flexWrap: 'wrap' }}>
+            <Button variant="cta" iconRight={<Chevron />}>Open Match Centre</Button>
+            <Button variant="ghost" iconRight={<Share />}>Share</Button>
+          </div>
+        </div>
+        <div style={{ width: '100%', maxWidth: 400, justifySelf: 'center' }}>
+          <HudShield />
+        </div>
+      </div>
+
+      <GlassPanel clip="panel" bracket padding="0" frameWidth={20}>
+        <div className="hub-grid hub-panel-pad" style={{ padding: '1.8rem' }}>
+          {/* LEFT column — live fixtures */}
+          <div style={{ borderRight: '1px solid var(--csfc-copper-30)', paddingRight: '1.4rem' }} className="hub-col">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.6rem' }}>
+              <span style={{ fontFamily: 'var(--font-display)', fontSize: '0.74rem', letterSpacing: '0.18em',
+                textTransform: 'uppercase', color: 'var(--csfc-text-primary)' }}>Fixtures</span>
+              <Tabs value={tab} onChange={setTab} tabs={[
+              { id: 'live', label: 'Live' }, { id: 'next', label: 'Upcoming' }, { id: 'res', label: 'Results' }]
+              } />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
+              {data[tab].map((m, i) => <ScoreWidget key={i} {...m} />)}
+            </div>
+          </div>
+
+          {/* RIGHT column — tactical stat board */}
+          <div className="hub-col">
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+              <span style={{ fontFamily: 'var(--font-display)', fontSize: '0.74rem', letterSpacing: '0.18em',
+                textTransform: 'uppercase', color: 'var(--csfc-text-primary)' }}>Tactical Readout</span>
+              <Badge tone="emerald" pulse>ARG vs CAN</Badge>
+            </div>
+            <div className="stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.7rem', marginBottom: '0.7rem' }}>
+              <StatWidget label="Goals" value="2" delta="+1" size="md" />
+              <StatWidget label="xG" value="2.4" size="md" />
+              <StatWidget label="Shots" value="14" delta="(7)" size="md" />
+              <StatWidget label="Possession" value="58%" size="md" />
+              <StatWidget label="Passes" value="486" size="md" />
+              <StatWidget label="Offsides" value="2" size="md" />
+            </div>
+            {/* possession bar */}
+            <div style={{ marginTop: '1rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6,
+                fontFamily: 'var(--font-mono)', fontSize: '0.7rem', color: 'var(--csfc-text-muted)' }}>
+                <span style={{ color: 'var(--csfc-bronze)' }}>ARG 58%</span><span>POSSESSION</span><span>42% CAN</span>
+              </div>
+              <div style={{ height: 12, background: 'rgb(2 6 23 / 0.6)', border: '1px solid var(--csfc-copper-30)',
+                clipPath: 'var(--clip-button)', display: 'flex', overflow: 'hidden' }}>
+                <div style={{ width: '58%', background: 'var(--metal-bronze)' }} />
+                <div style={{ width: '42%', background: 'linear-gradient(90deg,#0c4f26,#15803d)' }} />
+              </div>
+            </div>
+            <div style={{ marginTop: '1.3rem', display: 'flex', gap: '0.7rem', flexWrap: 'wrap' }}>
+              <Button variant="tactical" size="sm" iconRight={<Chevron />}>Full Match Centre</Button>
+              <span style={{ width: 38, height: 38 }}><IconButton label="Share match" variant="tactical"><Share /></IconButton></span>
+            </div>
+          </div>
+        </div>
+      </GlassPanel>
+    </section>);
+
+}
+
+/* ======================= VIRAL GALLERY ======================= */
+function GalleryTile({ c }) {
+  const [hover, setHover] = React.useState(false);
+  return (
+    <div onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
+    style={{ transform: hover ? 'scale(1.04)' : 'scale(1)', transition: 'transform 0.35s var(--ease-out)',
+      filter: hover ? 'drop-shadow(0 0 16px rgb(207 154 82 / 0.4))' : 'none', cursor: 'pointer' }}>
+      <VideoTile {...c} />
+    </div>);
+
+}
+function ViralGallery() {
+  const [filter, setFilter] = React.useState('All');
+  const filters = ['All', 'Goals', 'Saves', 'Skills', 'Tunnel'];
+  const clips = [
+  { title: 'Messi free-kick rocket', duration: '0:42', views: '2.4M views', badge: <Badge tone="emerald" pulse>Hot</Badge> },
+  { title: 'Croc bicycle kick', duration: '0:18', views: '980K views' },
+  { title: 'Last-minute winner', duration: '1:05', views: '5.1M views', badge: <Badge tone="bronze">Top</Badge> },
+  { title: 'Keeper wonder save', duration: '0:27', views: '1.2M views' },
+  { title: 'Tunnel walkout', duration: '0:33', views: '640K views' },
+  { title: 'Trophy lift', duration: '0:51', views: '3.8M views', badge: <Badge tone="copper">New</Badge> }];
+
+  return (
+    <section id="viral-gallery" className="section anchor" data-screen-label="Viral Gallery">
+      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.8rem' }}>
+        <div>
+          <div className="eyebrow">Viral Gallery</div>
+          <h2 className="csfc-display-gradient" style={{ fontSize: 'clamp(2rem, 4vw, 3rem)' }}>Trending Clips</h2>
+        </div>
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+          {filters.map((f) => <Tag key={f} selected={filter === f} onClick={() => setFilter(f)}>{f}</Tag>)}
+        </div>
+      </div>
+      <div className="gallery-grid">
+        {clips.map((c, i) => <GalleryTile key={i} c={c} />)}
+      </div>
+    </section>);
+
+}
+
+/* ============================ STORE ============================ */
+const PRODUCTS = [
+{ img: 'jersey_albiceleste', name: 'Albiceleste Poly', team: 'Argentina', price: '$74' },
+{ img: 'jersey_canary', name: 'Canary Facet', team: 'Brazil', price: '$74' },
+{ img: 'jersey_blanco_rojo', name: 'Blanco Rojo', team: 'Peru', price: '$79' },
+{ img: 'jersey_tricolor', name: 'Tricolore Blank', team: 'France', price: '$74' },
+{ img: 'jersey_verderojo', name: 'Verde Rojo', team: 'Portugal', price: '$74' }];
+
+function ProductCard({ p }) {
+  const [hover, setHover] = React.useState(false);
+  return (
+    <div onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
+    style={{ background: hover ? 'var(--metal-bronze-lit)' : 'var(--metal-bronze)', padding: '3px',
+      clipPath: 'var(--clip-card)', transition: 'var(--transition-all)', transform: hover ? 'translateY(-4px)' : 'none',
+      filter: hover ? 'drop-shadow(0 0 14px rgb(207 154 82 / 0.4)) var(--shadow-metal)' : 'var(--shadow-metal)' }}>
+      <div style={{ background: 'linear-gradient(180deg, rgb(9 22 30 / 0.96), rgb(4 16 21 / 0.96))',
+        clipPath: 'var(--clip-card)', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.7rem' }}>
+        <div style={{ position: 'relative', aspectRatio: '3 / 4', overflow: 'hidden',
+          background: 'radial-gradient(ellipse at 50% 40%, #14323a, #04141a)', border: '1px solid var(--csfc-copper-30)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <img src={A + p.img + '.png'} alt={p.name} style={{ width: '108%', objectFit: 'contain',
+            transform: hover ? 'scale(1.05)' : 'scale(1)', transition: 'transform 0.4s var(--ease-out)' }} />
+          <span style={{ position: 'absolute', top: 8, left: 8 }}><Badge tone="bronze">{p.team}</Badge></span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+          <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '0.8rem',
+            letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--csfc-text-primary)' }}>{p.name}</span>
+          <span className="csfc-data" style={{ fontSize: '1.05rem' }}>{p.price}</span>
+        </div>
+        <Button variant="cta" size="sm" style={{ width: '100%' }} iconRight={<Ext />}>Buy on Printify</Button>
+      </div>
+    </div>);
+
+}
+function Store() {
+  return (
+    <section id="store" className="section anchor" data-screen-label="Store">
+      <div style={{ textAlign: 'center' }} className="eyebrow">Locker Room · Printify Drops</div>
+      <h2 className="csfc-display-gradient" style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', textAlign: 'center', marginBottom: '0.5rem' }}>"Solid Poly Blank"</h2>
+      <p className="csfc-body" style={{ textAlign: 'center', maxWidth: '52ch', margin: '0 auto 2.6rem' }}>
+        The 2026 World Squad collection. Every kit carries the embossed bronze crest. Printed &amp; shipped via Printify.
+      </p>
+      <div style={{ position: 'relative', margin: '0 auto 3rem', maxWidth: 760,
+        background: 'var(--metal-bronze)', padding: '5px', clipPath: 'var(--clip-hex)',
+        filter: 'var(--raise-3d) drop-shadow(0 20px 44px rgb(0 0 0 / 0.6))' }}>
+        <div style={{ clipPath: 'var(--clip-hex)', background: 'radial-gradient(ellipse at 50% 35%, #16323a, #04141a)', padding: '2.5rem 1rem' }}>
+          <img src={A + 'merch_collection.png'} alt="Solid Poly Blank collection" style={{ width: '100%', display: 'block' }} />
+        </div>
+      </div>
+      <div className="store-grid">
+        {PRODUCTS.map((p) => <ProductCard key={p.img} p={p} />)}
+      </div>
+    </section>);
+
+}
+
+/* ============================ FOOTER ============================ */
+function Footer() {
+  const cols = [
+  ['Club', ['About', 'The Roster', 'World Cup Hub', 'Press Kit']],
+  ['Watch', ['Viral Gallery', 'Live Match Centre', 'Highlights', 'YouTube']],
+  ['Shop', ['Solid Poly Blank', 'Printify Store', 'Size Guide', 'Returns']]];
+
+  return (
+    <footer style={{ position: 'relative', marginTop: '2rem', borderTop: '1px solid var(--csfc-copper-30)',
+      background: 'rgb(2 6 23 / 0.75)' }}>
+      <div className="section footer-grid" style={{ paddingTop: '3rem', paddingBottom: '2rem', display: 'grid',
+        gridTemplateColumns: '1.4fr 1fr 1fr 1fr', gap: '2rem' }}>
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.7rem', marginBottom: '0.9rem' }}>
+            <img src={A + 'logo_medallion.png'} alt="" style={{ width: 40, height: 40 }} />
+            <img src={A + 'wordmark.png'} alt="Crocodile Sauce F.C." style={{ height: 24, width: 'auto', filter: 'drop-shadow(0 2px 5px rgb(0 0 0 / 0.5))' }} />
+          </div>
+          <p className="csfc-body" style={{ fontSize: '0.9rem', maxWidth: '34ch' }}>
+            The most ferocious low-poly football squad on the planet. Join the faithful.
+          </p>
+        </div>
+        {cols.map(([h, items]) =>
+        <div key={h}>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: '0.66rem', letterSpacing: '0.18em',
+            textTransform: 'uppercase', color: 'var(--csfc-bronze)', marginBottom: '0.9rem' }}>{h}</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+              {items.map((it) =>
+            <a key={it} href="#" style={{ fontFamily: 'var(--font-sans)', fontWeight: 300, fontSize: '0.88rem',
+              color: 'var(--csfc-text-muted)', textDecoration: 'none' }}>{it}</a>
+            )}
+            </div>
+          </div>
+        )}
+      </div>
+      <div className="section" style={{ paddingTop: '1.2rem', paddingBottom: '1.6rem', borderTop: '1px solid var(--csfc-copper-30)',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--csfc-text-muted)' }}>© 2026 · Low-Poly United · All facets reserved</span>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--csfc-emerald-bright)' }}>Built faceted · Bronze &amp; Emerald</span>
+      </div>
+    </footer>);
+
+}
+
+/* ============================== APP ============================== */
+function App() {
+  return (
+    <React.Fragment>
+      <Header />
+      <Hero />
+      <About />
+      <MatchHub />
+      <ViralGallery />
+      <Store />
+      <Footer />
+    </React.Fragment>);
+
+}
+ReactDOM.createRoot(document.getElementById('app')).render(<App />);
+</script>
+</body>
+</html>

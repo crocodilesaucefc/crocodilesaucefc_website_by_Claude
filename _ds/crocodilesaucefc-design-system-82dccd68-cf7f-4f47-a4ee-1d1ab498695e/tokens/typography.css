@@ -1,0 +1,115 @@
+/* ============================================================
+   CrocodileSauceFC — TYPOGRAPHY TOKENS
+   Headers: Orbitron, UPPERCASE, extreme tracking.
+   Body:    Rajdhani (clean technical sans).
+   Data:    JetBrains Mono, bold.
+   ============================================================ */
+
+:root {
+  /* ---- Families ---- */
+  --font-display: 'Orbitron', 'Arial Black', 'Impact', sans-serif;
+  --font-sans: 'Inter', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Share Tech Mono', 'Courier New', Courier, monospace;
+
+  /* ---- Header type scale (display) ---- */
+  --text-display-xl: clamp(2.75rem, 6vw, 5.5rem); /* hero title */
+  --text-display-lg: clamp(2rem, 4vw, 3.25rem);   /* section headers */
+  --text-display-md: 1.5rem;                       /* card headers */
+  --text-display-sm: 1.05rem;                      /* eyebrow / nav */
+
+  /* ---- Body scale ---- */
+  --text-body-lg: 1.25rem;
+  --text-body-md: 1.0625rem;
+  --text-body-sm: 0.9375rem;
+  --text-eyebrow: 0.8125rem;
+
+  /* ---- Data / numeric scale ---- */
+  --text-data-xl: 3.5rem;  /* big live score totals */
+  --text-data-lg: 2rem;
+  --text-data-md: 1.25rem;
+  --text-data-sm: 0.875rem;
+
+  /* ---- Weights ---- */
+  --weight-light: 300;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-black: 900;
+
+  /* ---- Tracking (letter-spacing) ---- */
+  --tracking-widest: 0.25em;   /* display headers */
+  --tracking-wide: 0.12em;     /* eyebrows, nav, buttons */
+  --tracking-data: -0.02em;    /* numerics (tight / monospaced) */
+  --tracking-normal: 0.01em;   /* body */
+
+  /* ---- Line heights ---- */
+  --leading-tight: 1.05;
+  --leading-snug: 1.25;
+  --leading-body: 1.55;
+}
+
+/* ---- Reusable type roles (utility classes) ---- */
+.csfc-display {
+  font-family: var(--font-display);
+  font-weight: var(--weight-black);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
+  line-height: var(--leading-tight);
+  color: var(--text-heading);
+}
+
+/* Gradient header treatment — slate-50 -> slate-300 */
+.csfc-display-gradient {
+  font-family: var(--font-display);
+  font-weight: var(--weight-black);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
+  line-height: var(--leading-tight);
+  background: linear-gradient(to right, #f8fafc, #cbd5e1);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Branded bronze -> copper gradient (buttons, accents) */
+.csfc-display-brand {
+  font-family: var(--font-display);
+  font-weight: var(--weight-black);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  background: linear-gradient(to bottom, var(--csfc-bronze), var(--csfc-copper));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.csfc-eyebrow {
+  font-family: var(--font-display);
+  font-weight: var(--weight-medium);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  font-size: var(--text-eyebrow);
+  color: var(--text-data);
+}
+
+.csfc-body {
+  font-family: var(--font-sans);
+  font-weight: var(--weight-light);
+  letter-spacing: var(--tracking-normal);
+  line-height: var(--leading-body);
+  color: var(--text-muted);
+  text-align: left;
+}
+
+.csfc-data {
+  font-family: var(--font-mono);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-data);
+  background: var(--metal-text);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-variant-numeric: tabular-nums;
+  filter: var(--emboss-bronze);
+}

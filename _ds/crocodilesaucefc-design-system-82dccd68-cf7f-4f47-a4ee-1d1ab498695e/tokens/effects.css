@@ -1,0 +1,72 @@
+/* ============================================================
+   CrocodileSauceFC — EFFECTS TOKENS
+   Neon illumination, glass blur, motion timing.
+   ============================================================ */
+
+:root {
+  /* ---- Illumination (neon drop-shadows on active text/numbers) ---- */
+  --glow-bronze: drop-shadow(0 0 6px rgb(245 158 11 / 0.40)); /* @kind shadow */
+  --glow-bronze-strong: drop-shadow(0 0 10px rgb(245 158 11 / 0.55)); /* @kind shadow */
+  --glow-emerald: drop-shadow(0 0 8px rgb(52 211 153 / 0.45)); /* @kind shadow */
+  --glow-copper: drop-shadow(0 0 6px rgb(234 154 46 / 0.40)); /* @kind shadow */
+
+  /* ---- Box glows (frames / active panels) ---- */
+  --shadow-frame: 0 0 0 1px rgb(180 83 9 / 0.30), 0 0 24px rgb(2 6 23 / 0.80);
+  --shadow-frame-hover: 0 0 0 1px rgb(234 154 46 / 0.65), 0 0 28px rgb(234 154 46 / 0.18);
+  --shadow-panel: 0 18px 50px -20px rgb(0 0 0 / 0.85);
+  --shadow-inset-top: inset 0 1px 0 rgb(248 250 252 / 0.06);
+
+  /* ============================================================
+     REAL BRONZE METAL — faceted, 3D, polished (NOT neon orange)
+     Conic gradients make each chamfered edge read as a distinct
+     facet catching light. Use these for rims/frames/HUD edges.
+     ============================================================ */
+  /* Beveled bronze rim: top-left highlight + bottom-right shade over a
+     dark aged-copper base. The directional highlights read as a lit 3D edge.
+     Aged bronze is BROWN + matte, not yellow-gold. */
+  --metal-bronze:
+    linear-gradient(135deg, rgba(238,196,150,0.65) 0%, rgba(238,196,150,0) 26%),
+    linear-gradient(315deg, rgba(24,12,5,0.7) 0%, rgba(24,12,5,0) 28%),
+    linear-gradient(160deg, #9c6539 0%, #74492a 42%, #4c2f1a 100%); /* @kind other */
+  --metal-bronze-lit:
+    linear-gradient(135deg, rgba(255,224,186,0.85) 0%, rgba(255,224,186,0) 30%),
+    linear-gradient(315deg, rgba(24,12,5,0.6) 0%, rgba(24,12,5,0) 26%),
+    linear-gradient(160deg, #b67c47 0%, #8a5733 42%, #5c3a20 100%); /* @kind other */
+  /* Embossed bronze fill for metallic text (bg-clip:text) — warm, matte */
+  --metal-text: linear-gradient(180deg, #e7c096 0%, #c2895a 38%, #9a6238 66%, #6e4426 100%); /* @kind other */
+  /* Depth for metal text — emboss via glyph drop-shadow (no neon) */
+  --emboss-bronze: drop-shadow(0 1px 0 rgb(0 0 0 / 0.55)) drop-shadow(0 0 1px rgb(0 0 0 / 0.4)); /* @kind shadow */
+  /* Inner bevel for the metal frame's recessed glass face:
+     faint lit top-left wall + deep bottom-right shadow = recessed 3D. */
+  --bevel-inset: inset 2px 2px 3px rgb(238 196 150 / 0.10), inset -2px -3px 6px rgb(0 0 0 / 0.66), inset 0 0 0 1px rgb(0 0 0 / 0.3); /* @kind shadow */
+  /* Raised 3D edge: light catches the top-left, shadow falls bottom-right,
+     both following the chamfered silhouette (drop-shadow, not box-shadow). */
+  --raise-3d: drop-shadow(-1px -1px 0.6px rgb(255 228 190 / 0.4)) drop-shadow(2px 3px 4px rgb(0 0 0 / 0.55)); /* @kind shadow */
+  /* Soft contact shadow that sells metal sitting above the page */
+  --shadow-metal: 0 10px 26px -8px rgb(0 0 0 / 0.7); /* @kind shadow */
+  /* Cast shadow for the lit bronze frames (light from top-left) */
+  --cast-bronze: drop-shadow(3px 5px 5px rgb(0 0 0 / 0.55)); /* @kind shadow */
+  /* Faceted, studio-lit bronze frame images (border-image 9-slice).
+     url() resolves relative to THIS stylesheet → assets at project root. */
+  --frame-bronze: url('../assets/frame_v5.png'); /* @kind other */
+  --frame-bronze-lit: url('../assets/frame_v5_lit.png'); /* @kind other */
+  --frame-bronze-cham: url('../assets/frame_v5c.png'); /* @kind other */
+  --frame-bronze-cham-lit: url('../assets/frame_v5c_lit.png'); /* @kind other */
+  /* Emerald LED accent (HUD edge lights) */
+  --led-emerald: 0 0 8px rgb(52 211 153 / 0.7), 0 0 2px rgb(52 211 153 / 0.9); /* @kind shadow */
+
+  /* ---- Blur ---- */
+  --blur-glass: blur(10px); /* @kind other */
+  --blur-glass-lg: blur(18px); /* @kind other */
+
+  /* ---- Scanline / texture overlay alpha ---- */
+  --scanline: rgb(180 83 9 / 0.04); /* @kind color */
+
+  /* ---- Motion ---- */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1); /* @kind other */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1); /* @kind other */
+  --duration-fast: 150ms; /* @kind other */
+  --duration: 300ms; /* @kind other */
+  --duration-slow: 600ms; /* @kind other */
+  --transition-all: all var(--duration) var(--ease-standard); /* @kind other */
+}

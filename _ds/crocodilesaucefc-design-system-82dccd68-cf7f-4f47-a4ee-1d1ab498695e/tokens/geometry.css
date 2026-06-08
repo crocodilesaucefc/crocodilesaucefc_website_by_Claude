@@ -1,0 +1,55 @@
+/* ============================================================
+   CrocodileSauceFC — GEOMETRY TOKENS (THE POLY LOOK)
+   Standard rounding is BANNED. Sharp, angular, low-poly cuts.
+   ============================================================ */
+
+:root {
+  /* ---- Radius: globally none ---- */
+  --radius-none: 0;
+  --radius: 0;
+
+  /* ---- Border hardware lines ---- */
+  --border-width: 1px;                 /* ultra-thin precision line */
+  --border-width-bold: 2px;            /* active / emphasized frame */
+  --border-line: var(--border-width) solid var(--border-primary);
+  --border-line-dim: var(--border-width) solid var(--border-primary-dim);
+
+  /* ---- Clip-path polygon recipes (low-poly tech edges) ---- */
+  /* Card: top-left & bottom-right corners sliced */
+  --clip-card: polygon(
+    18px 0, 100% 0, 100% calc(100% - 18px),
+    calc(100% - 18px) 100%, 0 100%, 0 18px
+  ); /* @kind other */
+  /* Button: leading + trailing chamfer */
+  --clip-button: polygon(
+    10px 0, 100% 0, 100% calc(100% - 10px),
+    calc(100% - 10px) 100%, 0 100%, 0 10px
+  ); /* @kind other */
+  /* Panel: large single-corner cut (top-right) */
+  --clip-panel: polygon(
+    0 0, calc(100% - 28px) 0, 100% 28px, 100% 100%, 0 100%
+  ); /* @kind other */
+  /* Tab / badge: parallelogram-leaning chamfer */
+  --clip-tag: polygon(
+    8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%
+  ); /* @kind other */
+  /* Hex frame: tall hexagonal showcase (merch centerpiece) */
+  --clip-hex: polygon(
+    50% 0, 100% 18%, 100% 82%, 50% 100%, 0 82%, 0 18%
+  ); /* @kind other */
+  /* Notch: corner-bracket reticle cut */
+  --clip-notch: polygon(
+    0 0, 100% 0, 100% 100%, 24px 100%, 0 calc(100% - 24px)
+  ); /* @kind other */
+
+  /* ---- Spacing scale (8px base grid) ---- */
+  --space-1: 0.25rem;   /* 4 */
+  --space-2: 0.5rem;    /* 8 */
+  --space-3: 0.75rem;   /* 12 */
+  --space-4: 1rem;      /* 16 */
+  --space-5: 1.5rem;    /* 24 */
+  --space-6: 2rem;      /* 32 */
+  --space-7: 3rem;      /* 48 */
+  --space-8: 4rem;      /* 64 */
+  --space-9: 6rem;      /* 96 */
+}
