@@ -1,0 +1,370 @@
+@import "tailwindcss";
+
+/* ============================================================
+   CrocodileSauceFC Design System — ported tokens
+   Source: _ds design-system bundle, tokens directory (colors, type, geometry, effects)
+   Single source of truth lives here as CSS custom properties;
+   Tailwind utilities resolve through them via @theme below.
+   ============================================================ */
+
+:root {
+  /* ---- Base / structural backgrounds ---- */
+  --csfc-bg-deep: #020617;
+  --csfc-bg-black: #000000;
+  --csfc-bg-panel: #060b1a;
+
+  /* ---- Blue-green / teal field ---- */
+  --csfc-teal-deep: #04141a;
+  --csfc-teal: #0a242b;
+  --csfc-blue-green: #14323a;
+  --csfc-navy: #0e1726;
+
+  /* ---- Accents ---- */
+  --csfc-copper: #b45309;
+  --csfc-copper-bright: #ea9a2e;
+  --csfc-bronze: #f59e0b;
+  --csfc-gold: #eab308;
+  --csfc-gold-bright: #fde68a;
+  --csfc-emerald: #15803d;
+  --csfc-emerald-bright: #34d399;
+
+  /* ---- Text ---- */
+  --csfc-text-primary: #f8fafc;
+  --csfc-text-muted: #94a3b8;
+
+  /* ---- Glass / translucency ---- */
+  --csfc-glass: rgb(9 22 30 / 0.78);
+  --csfc-glass-hover: rgb(15 38 46 / 0.86);
+  --csfc-copper-30: rgb(180 83 9 / 0.30);
+  --csfc-copper-60: rgb(180 83 9 / 0.60);
+  --csfc-bronze-40: rgb(245 158 11 / 0.40);
+  --csfc-gold-30: rgb(234 179 8 / 0.30);
+  --csfc-gold-60: rgb(234 179 8 / 0.60);
+  --csfc-emerald-30: rgb(21 128 61 / 0.30);
+
+  /* ---- Semantic aliases ---- */
+  --surface-bg:
+    radial-gradient(ellipse at 60% 30%, rgb(20 50 58 / 0.55) 0%, rgb(4 20 26 / 0.85) 55%, rgb(2 8 11 / 0.96) 100%),
+    url('/ds/bg_lowpoly.jpg') center / cover fixed no-repeat,
+    var(--csfc-teal-deep);
+  --surface-bg-flat: linear-gradient(160deg, #0a242b, #04141a 70%, #020a0c);
+  --surface-panel: var(--csfc-navy);
+  --surface-glass: var(--csfc-glass);
+  --surface-glass-hover: var(--csfc-glass-hover);
+
+  --border-primary: var(--csfc-copper);
+  --border-primary-dim: var(--csfc-copper-30);
+  --border-primary-bright: var(--csfc-copper-bright);
+
+  --text-heading: var(--csfc-text-primary);
+  --text-body: var(--csfc-text-primary);
+  --text-muted: var(--csfc-text-muted);
+  --text-data: var(--csfc-bronze);
+
+  --action-fill: var(--csfc-emerald);
+  --action-text: var(--csfc-emerald-bright);
+
+  /* ---- Type families & scale ----
+     Orbitron's blocky glyphs were hurting legibility on data-dense panes —
+     Rajdhani keeps the engineering-HUD character (geometric, technical) while
+     staying readable at small sizes; Inter and JetBrains Mono cover body/data. */
+  --font-display: 'Rajdhani', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Inter', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', Courier, monospace;
+
+  --text-display-xl: clamp(2.75rem, 6vw, 5.5rem);
+  --text-display-lg: clamp(2rem, 4vw, 3.25rem);
+  --text-display-md: 1.5rem;
+  --text-display-sm: 1.05rem;
+
+  --text-body-lg: 1.25rem;
+  --text-body-md: 1.0625rem;
+  --text-body-sm: 0.9375rem;
+  --text-eyebrow: 0.8125rem;
+
+  --text-data-xl: 3.5rem;
+  --text-data-lg: 2rem;
+  --text-data-md: 1.25rem;
+  --text-data-sm: 0.875rem;
+
+  --weight-light: 300;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-black: 900;
+
+  --tracking-widest: 0.25em;
+  --tracking-wide: 0.12em;
+  --tracking-data: -0.02em;
+  --tracking-normal: 0.01em;
+
+  --leading-tight: 1.05;
+  --leading-snug: 1.25;
+  --leading-body: 1.55;
+
+  /* ---- Geometry: rounding banned, clip-path polygons ---- */
+  --radius-none: 0;
+  --radius: 0;
+
+  --border-width: 1px;
+  --border-width-bold: 2px;
+  --border-line: var(--border-width) solid var(--border-primary);
+  --border-line-dim: var(--border-width) solid var(--border-primary-dim);
+
+  --clip-card: polygon(18px 0, 100% 0, 100% calc(100% - 18px), calc(100% - 18px) 100%, 0 100%, 0 18px);
+  --clip-button: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  --clip-panel: polygon(0 0, calc(100% - 28px) 0, 100% 28px, 100% 100%, 0 100%);
+  --clip-tag: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  --clip-hex: polygon(50% 0, 100% 18%, 100% 82%, 50% 100%, 0 82%, 0 18%);
+  --clip-notch: polygon(0 0, 100% 0, 100% 100%, 24px 100%, 0 calc(100% - 24px));
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+
+  /* ---- Effects: illumination, glass, metal, motion ---- */
+  --glow-bronze: drop-shadow(0 0 6px rgb(245 158 11 / 0.40));
+  --glow-bronze-strong: drop-shadow(0 0 10px rgb(245 158 11 / 0.55));
+  --glow-emerald: drop-shadow(0 0 8px rgb(52 211 153 / 0.45));
+  --glow-copper: drop-shadow(0 0 6px rgb(234 154 46 / 0.40));
+
+  --shadow-frame: 0 0 0 1px rgb(180 83 9 / 0.30), 0 0 24px rgb(2 6 23 / 0.80);
+  --shadow-frame-hover: 0 0 0 1px rgb(234 154 46 / 0.65), 0 0 28px rgb(234 154 46 / 0.18);
+  --shadow-panel: 0 18px 50px -20px rgb(0 0 0 / 0.85);
+  --shadow-inset-top: inset 0 1px 0 rgb(248 250 252 / 0.06);
+
+  --metal-bronze:
+    linear-gradient(135deg, rgba(238,196,150,0.65) 0%, rgba(238,196,150,0) 26%),
+    linear-gradient(315deg, rgba(24,12,5,0.7) 0%, rgba(24,12,5,0) 28%),
+    linear-gradient(160deg, #9c6539 0%, #74492a 42%, #4c2f1a 100%);
+  --metal-bronze-lit:
+    linear-gradient(135deg, rgba(255,224,186,0.85) 0%, rgba(255,224,186,0) 30%),
+    linear-gradient(315deg, rgba(24,12,5,0.6) 0%, rgba(24,12,5,0) 26%),
+    linear-gradient(160deg, #b67c47 0%, #8a5733 42%, #5c3a20 100%);
+  --metal-text: linear-gradient(180deg, #e7c096 0%, #c2895a 38%, #9a6238 66%, #6e4426 100%);
+  --emboss-bronze: drop-shadow(0 1px 0 rgb(0 0 0 / 0.55)) drop-shadow(0 0 1px rgb(0 0 0 / 0.4));
+  --bevel-inset: inset 2px 2px 3px rgb(238 196 150 / 0.10), inset -2px -3px 6px rgb(0 0 0 / 0.66), inset 0 0 0 1px rgb(0 0 0 / 0.3);
+  --raise-3d: drop-shadow(-1px -1px 0.6px rgb(255 228 190 / 0.4)) drop-shadow(2px 3px 4px rgb(0 0 0 / 0.55));
+  --shadow-metal: 0 10px 26px -8px rgb(0 0 0 / 0.7);
+  --cast-bronze: drop-shadow(3px 5px 5px rgb(0 0 0 / 0.55));
+
+  /* ---- Procedural frames: gradient-filled border-images built purely from
+     the copper/gold tokens — a "metal rim" with zero image assets. Swapping
+     the active tone (copper ↔ gold) is how panels read as "lit". ---- */
+  --frame-rim-copper: linear-gradient(160deg, var(--csfc-copper-bright) 0%, var(--csfc-copper) 52%, #5b3209 100%);
+  --frame-rim-gold: linear-gradient(160deg, var(--csfc-gold-bright) 0%, var(--csfc-gold) 52%, #8a6404 100%);
+
+  --led-emerald: 0 0 8px rgb(52 211 153 / 0.7), 0 0 2px rgb(52 211 153 / 0.9);
+
+  --blur-glass: blur(10px);
+  --blur-glass-lg: blur(18px);
+  --scanline: rgb(180 83 9 / 0.04);
+
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 150ms;
+  --duration: 300ms;
+  --duration-slow: 600ms;
+  --transition-all: all var(--duration) var(--ease-standard);
+}
+
+/* Map tokens onto Tailwind v4 theme so utilities (bg-bronze, text-muted,
+   font-display, rounded-none, etc.) resolve through the same variables. */
+@theme inline {
+  --color-bronze: var(--csfc-bronze);
+  --color-copper: var(--csfc-copper);
+  --color-copper-bright: var(--csfc-copper-bright);
+  --color-emerald: var(--csfc-emerald);
+  --color-emerald-bright: var(--csfc-emerald-bright);
+  --color-teal-deep: var(--csfc-teal-deep);
+  --color-teal: var(--csfc-teal);
+  --color-navy: var(--csfc-navy);
+  --color-ink: var(--csfc-text-primary);
+  --color-muted: var(--csfc-text-muted);
+  --color-glass: var(--csfc-glass);
+
+  --font-display: var(--font-display);
+  --font-mono: var(--font-mono);
+  --font-body: var(--font-sans);
+
+  --radius-none: 0px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+}
+
+/* ============================================================
+   Base / reset — rounding banned, cinematic dark base
+   ============================================================ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  border-radius: var(--radius-none);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--surface-bg);
+  background-attachment: fixed;
+  color: var(--text-body);
+  font-family: var(--font-sans);
+  font-weight: var(--weight-light);
+  letter-spacing: var(--tracking-normal);
+  line-height: var(--leading-body);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: var(--weight-bold);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
+  line-height: var(--leading-tight);
+  color: var(--text-heading);
+}
+
+p { margin: 0; }
+
+::selection {
+  background: var(--csfc-emerald);
+  color: var(--csfc-text-primary);
+}
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--csfc-bg-black); }
+::-webkit-scrollbar-thumb {
+  background: var(--csfc-copper-30);
+  border: 1px solid var(--csfc-copper);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--csfc-copper-60); }
+
+/* ============================================================
+   Reusable type roles (ported 1:1 from the prototype)
+   ============================================================ */
+.csfc-display {
+  font-family: var(--font-display);
+  font-weight: var(--weight-black);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
+  line-height: var(--leading-tight);
+  color: var(--text-heading);
+}
+
+.csfc-eyebrow {
+  font-family: var(--font-display);
+  font-weight: var(--weight-medium);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  font-size: var(--text-eyebrow);
+  color: var(--text-data);
+}
+
+.csfc-body {
+  font-family: var(--font-sans);
+  font-weight: var(--weight-light);
+  letter-spacing: var(--tracking-normal);
+  line-height: var(--leading-body);
+  color: var(--text-muted);
+  text-align: left;
+}
+
+.csfc-data {
+  /* Solid fill, not a gradient clipped to text — the clip-to-text "metal"
+     look went transparent (and unreadable) wherever an element supplied its
+     own background, so data values now read in a flat, high-contrast tone. */
+  font-family: var(--font-mono);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-data);
+  color: var(--text-data);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================
+   Geometry & metal utility classes — non-Tailwind-friendly DS
+   primitives (clip-path, border-image, bevels) ported as classes
+   ============================================================ */
+.ds-clip-card   { clip-path: var(--clip-card); }
+.ds-clip-button { clip-path: var(--clip-button); }
+.ds-clip-panel  { clip-path: var(--clip-panel); }
+.ds-clip-tag    { clip-path: var(--clip-tag); }
+.ds-clip-hex    { clip-path: var(--clip-hex); }
+.ds-clip-notch  { clip-path: var(--clip-notch); }
+
+/* ---- Procedural frame controls — compose onto any panel/element to grow or
+   shrink its border, round its corners, or dial its glow up or down. The
+   metal/glass rim itself comes from the gradient tokens above (no images). ---- */
+.csfc-frame-thin   { --csfc-frame-width: 1px; }
+.csfc-frame-thick  { --csfc-frame-width: 3px; }
+.csfc-frame-heavy  { --csfc-frame-width: 6px; }
+
+.csfc-frame-square { --csfc-frame-radius: 0px; }
+.csfc-frame-soft   { --csfc-frame-radius: 10px; }
+.csfc-frame-round  { --csfc-frame-radius: 999px; }
+
+.csfc-frame-glow-off    { --csfc-frame-glow: none; }
+.csfc-frame-glow-soft   { --csfc-frame-glow: var(--shadow-frame); }
+.csfc-frame-glow-strong { --csfc-frame-glow: var(--shadow-frame-hover); }
+
+.ds-bevel-inset { box-shadow: var(--bevel-inset); }
+.ds-cast-bronze { filter: var(--cast-bronze); }
+
+/* ============================================================
+   Section / layout primitives — ported from the prototype
+   ============================================================ */
+.section { position: relative; padding: 5rem 2.5rem; max-width: 1280px; margin: 0 auto; }
+.anchor { scroll-margin-top: 90px; }
+.eyebrow {
+  font-family: var(--font-display); font-size: 0.72rem; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--csfc-bronze); margin-bottom: 0.6rem;
+}
+
+/* ---- Responsive layout grids (inline styles can't hold media queries) ---- */
+.feature-grid { display: grid; grid-template-columns: 1fr 0.85fr; gap: 2.4rem; align-items: center; }
+.hub-grid { display: grid; grid-template-columns: 0.92fr 1.08fr; gap: 1.6rem; }
+.stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.7rem; }
+
+@media (max-width: 980px) {
+  .hub-grid { grid-template-columns: 1fr; }
+  .hub-col:first-child {
+    border-right: none !important;
+    padding-right: 0 !important;
+    border-bottom: 1px solid var(--csfc-copper-30);
+    padding-bottom: 1.6rem;
+    margin-bottom: 0.4rem;
+  }
+  .feature-grid { grid-template-columns: 1fr !important; gap: 1.8rem !important; }
+  .feature-grid > div:last-child { order: -1; }
+}
+
+@media (max-width: 640px) {
+  .section { padding: 3.5rem 1.2rem; }
+  .stat-grid { grid-template-columns: 1fr 1fr !important; }
+  .hub-panel-pad { padding: 1.1rem !important; }
+}
+
+@keyframes csfcPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+@keyframes csfcLed   { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
