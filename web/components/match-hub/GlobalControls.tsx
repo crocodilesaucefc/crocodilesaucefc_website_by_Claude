@@ -81,7 +81,7 @@ export function GlobalControls({ filter, onFilterChange, todayIso }: GlobalContr
   }
 
   return (
-    <GlassPanel clip="panel" bracket={false} padding="1.2rem" className="ds-clip-panel" style={{ marginBottom: '1.6rem' }}>
+    <GlassPanel clip="panel" bracket padding="1.2rem" className="ds-clip-panel" style={{ marginBottom: '1.6rem' }}>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.6rem', alignItems: 'flex-start' }}>
 
         {/* Timezone selector */}

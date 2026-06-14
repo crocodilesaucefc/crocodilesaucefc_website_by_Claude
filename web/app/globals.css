@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./landing.css";
 
 /* ============================================================
    CrocodileSauceFC Design System — ported tokens
@@ -264,6 +265,18 @@ p { margin: 0; }
   letter-spacing: var(--tracking-widest);
   line-height: var(--leading-tight);
   color: var(--text-heading);
+}
+
+.csfc-display-gradient {
+  font-family: var(--font-display);
+  font-weight: var(--weight-black);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
+  line-height: var(--leading-tight);
+  background: linear-gradient(to right, #f8fafc, #cbd5e1);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .csfc-eyebrow {

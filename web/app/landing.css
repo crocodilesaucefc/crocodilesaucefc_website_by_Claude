@@ -1,0 +1,228 @@
+/* ============================================================
+   CrocodileSauceFC — Landing page styles
+   Background layers, hero logo (.logo-free/.lf-*), the unified border
+   wrapper classes (.uni-bevel-outer / .uni-bevel-dark), About glitch
+   (.glitch-stage/@keyframes crocGlitch), social pills, footer, section grids,
+   nav, and all responsive media queries.
+   The DS tokens, fonts and .csfc-* helpers already live in web/app/globals.css —
+   this file does NOT redefine them.
+   ============================================================ */
+
+/* ---- Cinematic low-poly background stack ---- */
+.bg-photo {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background: url('/assets/bg_circuit.png') center / cover no-repeat;
+  filter: brightness(1.06) saturate(1.05);
+}
+.bg-grad {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background: radial-gradient(ellipse at 50% 28%, rgb(22 62 60 / 0.08) 0%, rgb(5 22 26 / 0.26) 50%, rgb(3 14 18 / 0.5) 82%, rgb(2 10 13 / 0.68) 100%);
+}
+.vignette {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background: radial-gradient(ellipse at 50% 40%, transparent 58%, rgb(0 0 0 / 0.42) 100%);
+}
+#app { position: relative; z-index: 1; min-height: 100vh; }
+
+/* ---- Hero floating mascot ---- */
+@keyframes floaty { 0%,100% { transform: translateY(0) rotate(-0.4deg); } 50% { transform: translateY(-22px) rotate(0.4deg); } }
+@keyframes hubpulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+/* ---- About: glitch-transition between two Chef poses ---- */
+.glitch-stage { position: relative; height: clamp(380px, 48vw, 540px); width: 100%; }
+.glitch-stage .gc { position: absolute; bottom: 0; left: 50%; height: 100%; width: auto; max-width: none;
+  object-fit: contain; object-position: center bottom; transform-origin: center bottom;
+  filter: drop-shadow(0 24px 36px rgb(0 0 0 / 0.55)); transition: opacity 0.16s linear; }
+.glitch-stage.glitching { animation: crocGlitch 0.6s steps(1, end); }
+.gc-scan { position: absolute; inset: 0; pointer-events: none; opacity: 0; z-index: 5;
+  background: linear-gradient(180deg, transparent 0 46%, rgb(52 211 153 / 0.5) 47% 50%, transparent 51% 100%); mix-blend-mode: screen; }
+.glitch-stage.glitching .gc-scan { animation: crocScan 0.6s linear; }
+@keyframes crocGlitch {
+  0%   { transform: translateX(0); filter: none; clip-path: inset(0 0 0 0); }
+  12%  { transform: translateX(-7px); filter: drop-shadow(5px 0 0 rgb(52 211 153 / 0.85)) drop-shadow(-5px 0 0 rgb(232 121 249 / 0.6)); clip-path: inset(0 0 64% 0); }
+  24%  { transform: translateX(6px);  clip-path: inset(58% 0 0 0); }
+  36%  { transform: translateX(-4px); filter: drop-shadow(-6px 0 0 rgb(34 211 238 / 0.7)) drop-shadow(5px 0 0 rgb(232 121 249 / 0.55)); clip-path: inset(28% 0 40% 0); }
+  50%  { transform: translateX(8px) scaleY(1.015); clip-path: inset(0 0 0 0); }
+  64%  { transform: translateX(-3px); filter: drop-shadow(4px 0 0 rgb(52 211 153 / 0.7)); clip-path: inset(72% 0 0 0); }
+  78%  { transform: translateX(2px); clip-path: inset(0 0 80% 0); }
+  100% { transform: translateX(0); filter: none; clip-path: inset(0 0 0 0); }
+}
+@keyframes crocScan { 0% { opacity: 0; top: -10%; } 20% { opacity: 0.9; } 80% { opacity: 0.7; } 100% { opacity: 0; top: 100%; } }
+@media (prefers-reduced-motion: reduce) {
+  .glitch-stage.glitching { animation: none !important; }
+  .glitch-stage.glitching .gc-scan { animation: none !important; }
+}
+.wire-row:hover .wire-text { color: var(--csfc-emerald-bright); }
+.wire-row:hover svg { transform: translate(2px, -2px); }
+@keyframes floatyShadow { 0%,100% { transform: scaleX(1); opacity: 0.45; } 50% { transform: scaleX(0.84); opacity: 0.25; } }
+@media (prefers-reduced-motion: reduce) {
+  .float-croc, .float-shadow { animation: none !important; }
+}
+
+/* ---- Unified border language: 4-layer frame wrapping every GlassPanel ---- */
+.uni-bevel-outer {
+  position: relative;
+  padding: 7px;                                  /* semi-transparent green band width */
+  background: rgb(34 197 119 / 0.26);            /* layer 3: brighter semi-transparent green */
+  -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+  border: 1px solid rgb(52 211 153 / 0.95);      /* layer 4: brighter continuous emerald outer line */
+  box-shadow: 0 0 24px rgb(52 211 153 / 0.38), inset 0 0 16px rgb(52 211 153 / 0.12);
+}
+.uni-bevel-dark {
+  position: relative;
+  padding: 8px;                                  /* layer 2: dark bevel band (breathing space) */
+  background: rgb(6 16 22 / 0.92);
+}
+
+/* ---- Hero logo: keyed bronze nameboard with an emerald neon underlayer ---- */
+.logo-board { position: relative; display: inline-block; width: min(100%, 660px);
+  margin: 0 0 1.5rem; isolation: isolate; }
+/* bronze plate (front) */
+.logo-bronze { position: relative; z-index: 2; display: block; width: 100%; height: auto;
+  filter: drop-shadow(0 12px 26px rgb(0 0 0 / 0.6)) drop-shadow(0 2px 2px rgb(0 0 0 / 0.5)); }
+/* emerald dilated outline sitting directly behind — reads as a neon edge around every letter + the frame */
+.logo-glow { position: absolute; top: 0; left: 0; z-index: 0; width: 100%; height: auto; pointer-events: none;
+  filter: drop-shadow(0 0 5px rgb(52 211 153 / 0.75)) drop-shadow(0 0 13px rgb(52 211 153 / 0.5)) drop-shadow(0 0 26px rgb(52 211 153 / 0.28)) brightness(1.12);
+  opacity: 0.7; animation: logoGlow 5.5s ease-in-out infinite; }
+/* chromatic-aberration fringe — offset cyan + magenta copies give the cyberpunk neon split */
+.logo-chroma { position: absolute; top: 0; left: 0; z-index: 0; width: 100%; height: auto; pointer-events: none; mix-blend-mode: screen; }
+.logo-chroma.cyan { opacity: 0.5; filter: hue-rotate(42deg) saturate(1.4) drop-shadow(0 0 6px rgb(34 211 238 / 0.55));
+  animation: chromaCyan 3.8s ease-in-out infinite; }
+.logo-chroma.magenta { opacity: 0.34; filter: hue-rotate(158deg) saturate(1.5) drop-shadow(0 0 6px rgb(232 121 249 / 0.5));
+  animation: chromaMag 3.8s ease-in-out infinite; }
+/* animated circuit traces — dashes crawl around the contour of every letter + the frame */
+.logo-traces { position: absolute; top: 0; left: 0; z-index: 1; width: 100%; height: auto; pointer-events: none;
+  opacity: 0.95; mix-blend-mode: screen;
+  filter: drop-shadow(0 0 3px rgb(52 211 153 / 0.8)) drop-shadow(0 0 8px rgb(52 211 153 / 0.35)); }
+/* consistent lit teal circuit panel behind the letters — never depends on the bg behind it */
+.logo-board-back { position: absolute; z-index: 0; inset: 7% 2%; pointer-events: none;
+  background:
+    radial-gradient(ellipse at 50% 40%, rgb(14 42 48 / 0.42) 0%, rgb(6 24 30 / 0.66) 70%, rgb(4 18 24 / 0.78) 100%);
+  box-shadow: inset 0 0 30px rgb(0 0 0 / 0.5), inset 0 1px 0 rgb(52 211 153 / 0.08);
+  filter: blur(2px); }
+/* emerald projection underglow beneath the plate */
+.logo-board::after { content: ""; position: absolute; z-index: 0; inset: 40% 14% -10%; pointer-events: none;
+  background: radial-gradient(ellipse at 50% 100%, rgb(52 211 153 / 0.20), transparent 72%); filter: blur(12px); }
+/* faint static circuit grid over the keyed interior — texture only, no motion */
+.logo-scan { position: absolute; z-index: 3; inset: 7% 2%; pointer-events: none; mix-blend-mode: screen; opacity: 0.3;
+  background:
+    repeating-linear-gradient(0deg, rgb(52 211 153 / 0.10) 0 1px, transparent 1px 6px),
+    repeating-linear-gradient(90deg, rgb(52 211 153 / 0.07) 0 1px, transparent 1px 9px); }
+/* emerald registration corner ticks — flush to the board corners (frame fills the plate) */
+.logo-tick { position: absolute; z-index: 4; width: 16px; height: 16px; pointer-events: none;
+  box-shadow: 0 0 7px rgb(52 211 153 / 0.5); }
+.logo-tick.tl { top: 0; left: 0; border-top: 2px solid var(--csfc-emerald-bright); border-left: 2px solid var(--csfc-emerald-bright); }
+.logo-tick.tr { top: 0; right: 0; border-top: 2px solid var(--csfc-emerald-bright); border-right: 2px solid var(--csfc-emerald-bright); }
+.logo-tick.bl { bottom: 0; left: 0; border-bottom: 2px solid var(--csfc-emerald-bright); border-left: 2px solid var(--csfc-emerald-bright); }
+.logo-tick.br { bottom: 0; right: 0; border-bottom: 2px solid var(--csfc-emerald-bright); border-right: 2px solid var(--csfc-emerald-bright); }
+/* smooth breathing — no hard flicker */
+@keyframes logoGlow { 0%, 100% { opacity: 0.72; } 50% { opacity: 0.96; } }
+@keyframes chromaCyan { 0%, 100% { transform: translateX(-1.6px); } 46% { transform: translateX(-3.1px); } 50% { transform: translateX(-3.1px) translateY(0.5px); } }
+@keyframes chromaMag  { 0%, 100% { transform: translateX(1.6px); } 46% { transform: translateX(3.1px); } 50% { transform: translateX(3.1px) translateY(-0.5px); } }
+@media (prefers-reduced-motion: reduce) {
+  .logo-glow, .logo-chroma { animation: none !important; }
+}
+
+/* ---- Hero logo: BORDERLESS wordmark on a green-glass HUD panel (badge treatment) ---- */
+.logo-free { position: relative; display: inline-block; width: min(100%, 710px); margin: 0 0 1.7rem; }
+.logo-free-mark { position: relative; isolation: isolate; display: block; }
+.lf-bronze { position: relative; z-index: 2; display: block; width: 100%; height: auto;
+  filter: drop-shadow(0 9px 22px rgb(0 0 0 / 0.5)) drop-shadow(0 2px 1px rgb(0 0 0 / 0.5)); }
+/* green-glass HUD backing — matches the bright, digital 2026 WORLD SQUAD badge */
+.lf-panel { position: absolute; z-index: 0; left: -3%; right: -3%; top: -8%; bottom: -8%; pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg, rgb(52 211 153 / 0.06) 0 1px, transparent 1px 5px),
+    linear-gradient(180deg, rgb(21 128 61 / 0.26) 0%, rgb(8 40 36 / 0.14) 50%, rgb(21 128 61 / 0.26) 100%);
+  -webkit-backdrop-filter: blur(7px); backdrop-filter: blur(7px);
+  border-top: 1px solid rgb(52 211 153 / 0.55); border-bottom: 1px solid rgb(52 211 153 / 0.55);
+  box-shadow: 0 -1px 9px rgb(52 211 153 / 0.22), 0 1px 9px rgb(52 211 153 / 0.22),
+              0 0 20px rgb(52 211 153 / 0.1), inset 0 0 42px rgb(52 211 153 / 0.08); }
+/* HUD detailing layered over the clean rectangle (shape stays square) */
+.lf-deco { position: absolute; z-index: 2; inset: -8% -3%; pointer-events: none; }
+/* corner L-brackets */
+.lf-deco .cn { position: absolute; width: 16px; height: 16px; }
+.lf-deco .cn::before, .lf-deco .cn::after { content: ""; position: absolute; background: rgb(52 211 153 / 0.85); box-shadow: 0 0 6px rgb(52 211 153 / 0.6); }
+.lf-deco .cn::before { width: 16px; height: 2px; }
+.lf-deco .cn::after { width: 2px; height: 16px; }
+.lf-deco .cn.tl { top: 0; left: 0; } .lf-deco .cn.tl::before { top: 0; left: 0; } .lf-deco .cn.tl::after { top: 0; left: 0; }
+.lf-deco .cn.tr { top: 0; right: 0; } .lf-deco .cn.tr::before { top: 0; right: 0; } .lf-deco .cn.tr::after { top: 0; right: 0; }
+.lf-deco .cn.bl { bottom: 0; left: 0; } .lf-deco .cn.bl::before { bottom: 0; left: 0; } .lf-deco .cn.bl::after { bottom: 0; left: 0; }
+.lf-deco .cn.br { bottom: 0; right: 0; } .lf-deco .cn.br::before { bottom: 0; right: 0; } .lf-deco .cn.br::after { bottom: 0; right: 0; }
+/* centered registration ticks on top + bottom rails */
+.lf-deco .tick { position: absolute; left: 50%; transform: translateX(-50%); width: 34px; height: 4px;
+  background: repeating-linear-gradient(90deg, rgb(52 211 153 / 0.8) 0 2px, transparent 2px 7px); }
+.lf-deco .tick.t { top: -1px; } .lf-deco .tick.b { bottom: -1px; }
+/* side end-caps — short vertical accents centered on the L+R edges */
+.lf-deco .cap { position: absolute; top: 50%; transform: translateY(-50%); width: 2px; height: 26px;
+  background: rgb(52 211 153 / 0.7); box-shadow: 0 0 6px rgb(52 211 153 / 0.5); }
+.lf-deco .cap.l { left: -1px; } .lf-deco .cap.r { right: -1px; }
+/* small status node, upper-left */
+.lf-deco .node { position: absolute; top: -1px; left: 26px; display: flex; align-items: center; gap: 5px; transform: translateY(-50%); }
+.lf-deco .node i { width: 6px; height: 6px; background: #34d399; box-shadow: 0 0 7px rgb(52 211 153 / 0.9); animation: hubpulse 1.6s ease-in-out infinite; }
+.lf-deco .node span { font-family: var(--font-mono); font-size: 0.5rem; letter-spacing: 0.18em; color: rgb(52 211 153 / 0.9); background: rgb(4 18 22 / 0.85); padding: 1px 5px; }
+/* digital traces crawl the letters — the flowing detail in the glow */
+.lf-traces { position: absolute; top: 0; left: 0; z-index: 1; width: 100%; height: 100%; pointer-events: none; opacity: 0.92; mix-blend-mode: screen;
+  filter: hue-rotate(6deg) drop-shadow(0 0 3px rgb(52 211 153 / 0.9)) drop-shadow(0 0 7px rgb(52 211 153 / 0.45)); }
+/* higher-intensity emerald glow hugging each bronze letter */
+.lf-glow { position: absolute; top: 0; left: 0; z-index: 1; width: 100%; height: auto; pointer-events: none; mix-blend-mode: screen;
+  filter: drop-shadow(0 0 3px rgb(52 211 153 / 0.95)) drop-shadow(0 0 8px rgb(52 211 153 / 0.7)) drop-shadow(0 0 18px rgb(52 211 153 / 0.45)) drop-shadow(0 0 34px rgb(52 211 153 / 0.25)) brightness(1.15);
+  opacity: 0.92; animation: logoGlow 5.5s ease-in-out infinite; }
+/* squad lineup bar below the mark — glass-digital strip, hairline above + below */
+.logo-free-sub { display: inline-flex; align-items: center; gap: 0.85rem; margin-top: 1.05rem; width: fit-content;
+  padding: 0.5rem 1.05rem;
+  background: linear-gradient(180deg, rgb(12 34 40 / 0.62), rgb(6 22 28 / 0.66));
+  -webkit-backdrop-filter: blur(9px); backdrop-filter: blur(9px);
+  border-top: 1px solid rgb(45 212 191 / 0.55); border-bottom: 1px solid rgb(45 212 191 / 0.55);
+  box-shadow: inset 0 0 20px rgb(45 212 191 / 0.07), 0 0 16px rgb(0 0 0 / 0.32); }
+.lf-led { width: 7px; height: 7px; flex-shrink: 0; background: #2dd4bf; box-shadow: 0 0 8px rgb(45 212 191 / 0.85), 0 0 2px rgb(45 212 191 / 0.95);
+  animation: hubpulse 1.6s ease-in-out infinite; }
+.lf-sub-side { font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: 0.08em; color: var(--csfc-text-muted); white-space: nowrap; }
+.lf-sub-rule { width: 26px; height: 1px; background: linear-gradient(90deg, transparent, rgb(45 212 191 / 0.6)); }
+.lf-sub-rule.r { background: linear-gradient(90deg, rgb(45 212 191 / 0.6), transparent); }
+.lf-sub-text { font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: 0.3em; font-size: 0.72rem;
+  color: #5eead4; white-space: nowrap; text-shadow: 0 0 11px rgb(45 212 191 / 0.6); }
+@media (max-width: 560px) {
+  .lf-sub-side, .lf-sub-rule { display: none; }
+}
+
+/* ---- Responsive layout grids (inline styles can't hold media queries) ---- */
+.hero-grid { display: grid; grid-template-columns: 1fr 1.12fr; align-items: center; gap: 1.4rem; }
+.gallery-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.9rem; }
+.store-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; }
+.about-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 3rem; align-items: center; }
+.nav-links { display: flex; gap: 1.9rem; align-items: center; }
+.nav-toggle { display: none; }
+
+@media (max-width: 980px) {
+  .hero-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+  .hero-shield-col { justify-self: center !important; margin-top: 0; max-width: 420px !important; }
+  .chef-stage { margin: 0 auto; }
+  .about-grid { grid-template-columns: 1fr; }
+  .about-grid > div:last-child { order: -1; max-width: 280px; margin: 0 auto; }
+  .store-grid { grid-template-columns: repeat(3, 1fr); }
+  .nav-links {
+    position: absolute; top: 100%; right: 0; left: 0;
+    flex-direction: column; align-items: flex-start; gap: 1.1rem;
+    padding: 1.4rem 2.5rem;
+    background: rgb(4 18 24 / 0.97); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--csfc-copper-30);
+    transform: translateY(-8px); opacity: 0; pointer-events: none;
+    transition: all 0.25s var(--ease-standard);
+  }
+  .nav-links.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+  .nav-toggle { display: inline-flex; }
+  .footer-grid { grid-template-columns: 1fr 1fr !important; }
+}
+@media (max-width: 640px) {
+  .hero-sec { padding: 1.5rem 1.2rem 3rem !important; min-height: auto !important; }
+  .gallery-grid { grid-template-columns: repeat(3, 1fr); gap: 0.7rem; }
+  .store-grid { grid-template-columns: 1fr 1fr; }
+  .header-pad { padding: 0.8rem 1.2rem !important; }
+  .footer-grid { grid-template-columns: 1fr !important; gap: 1.6rem !important; }
+  .hide-sm { display: none !important; }
+}
+@media (max-width: 420px) {
+  .gallery-grid { grid-template-columns: 1fr 1fr; }
+  .store-grid { grid-template-columns: 1fr; }
+  .hero-stats { gap: 1.3rem !important; }
+}

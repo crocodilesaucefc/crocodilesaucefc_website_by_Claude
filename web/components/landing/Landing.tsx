@@ -1,0 +1,709 @@
+'use client';
+
+import { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
+import { Badge, Button, GlassPanel, IconButton, NavLink, Tag, UniBevel } from '@/components/ds';
+
+const A = '/assets/';
+
+/* ----------------------------- Icons ----------------------------- */
+
+function Ext() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} width="100%" height="100%">
+      <path d="M7 17L17 7M17 7H8M17 7v9" />
+    </svg>
+  );
+}
+
+function Menu() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} width="100%" height="100%">
+      <path d="M4 7h16M4 12h16M4 17h16" />
+    </svg>
+  );
+}
+
+function YouTubeIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="100%" height="100%">
+      <rect x={2} y={6} width={20} height={12} rx={3.4} fill="currentColor" />
+      <path d="M10 9.3l5 2.7-5 2.7z" fill="#04141a" />
+    </svg>
+  );
+}
+
+function InstagramIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} width="100%" height="100%">
+      <rect x={3.5} y={3.5} width={17} height={17} rx={5} />
+      <circle cx={12} cy={12} r={4} />
+      <circle cx={17} cy={7} r={1.1} fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+function TikTokIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" width="100%" height="100%">
+      <path d="M14 3h2.6c.25 1.7 1.2 3.05 2.9 3.5v2.7c-1.1.02-2.1-.28-3-.82v5.42c0 2.8-2.2 5-5 5s-5-2.2-5-5 2.2-5 5-5c.3 0 .6.03.9.08v2.8c-.3-.1-.6-.18-.9-.18-1.3 0-2.3 1-2.3 2.3s1 2.3 2.3 2.3 2.3-1 2.3-2.3V3z" />
+    </svg>
+  );
+}
+
+/* ----------------------------- Social ----------------------------- */
+
+type SocialLinkProps = {
+  href: string;
+  label: string;
+  color: string;
+  children: ReactNode;
+};
+
+function SocialLink({ href, label, color, children }: SocialLinkProps) {
+  const [hover, setHover] = useState(false);
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={label}
+      title={label}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        width: 50,
+        height: 50,
+        flexShrink: 0,
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color,
+        border: `1px solid ${hover ? 'var(--csfc-emerald-bright)' : 'rgb(52 211 153 / 0.95)'}`,
+        background: hover ? 'rgb(34 197 119 / 0.40)' : 'rgb(34 197 119 / 0.26)',
+        clipPath: 'polygon(11px 0, 100% 0, 100% 100%, 0 100%, 0 11px)',
+        boxShadow: hover
+          ? '0 0 24px rgb(52 211 153 / 0.6), inset 0 0 16px rgb(52 211 153 / 0.2)'
+          : '0 0 16px rgb(52 211 153 / 0.38), inset 0 0 14px rgb(52 211 153 / 0.12)',
+        transition: 'var(--transition-all)',
+        textDecoration: 'none',
+      }}
+    >
+      <span style={{ width: 25, height: 25, display: 'block' }}>{children}</span>
+    </a>
+  );
+}
+
+type SocialPillProps = SocialLinkProps & { handle: string };
+
+function SocialPill({ href, label, handle, color, children }: SocialPillProps) {
+  const [hover, setHover] = useState(false);
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={label}
+      title={label}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '0.6rem',
+        padding: '0.55rem 0.9rem 0.55rem 0.65rem',
+        border: `1px solid ${hover ? 'var(--csfc-emerald-bright)' : 'rgb(52 211 153 / 0.95)'}`,
+        background: hover ? 'rgb(34 197 119 / 0.40)' : 'rgb(34 197 119 / 0.26)',
+        clipPath: 'polygon(11px 0, 100% 0, 100% 100%, 0 100%, 0 11px)',
+        boxShadow: hover
+          ? '0 0 24px rgb(52 211 153 / 0.6), inset 0 0 16px rgb(52 211 153 / 0.2)'
+          : '0 0 16px rgb(52 211 153 / 0.38), inset 0 0 14px rgb(52 211 153 / 0.12)',
+        transition: 'var(--transition-all)',
+        textDecoration: 'none',
+      }}
+    >
+      <span style={{ width: 22, height: 22, display: 'block', color, flexShrink: 0 }}>{children}</span>
+      <span style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.15 }}>
+        <span style={{ fontFamily: 'var(--font-display)', fontSize: '0.62rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--csfc-emerald-bright)' }}>
+          {label}
+        </span>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.62rem', color: 'var(--csfc-text-muted)' }}>{handle}</span>
+      </span>
+    </a>
+  );
+}
+
+function SocialLinks() {
+  return (
+    <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+      <SocialLink href="https://youtube.com/@CrocodileSauceFC" label="YouTube" color="#ff3d3d">
+        <YouTubeIcon />
+      </SocialLink>
+      <SocialLink href="https://instagram.com/crocodilesaucefc" label="Instagram" color="#e879a8">
+        <InstagramIcon />
+      </SocialLink>
+      <SocialLink href="https://tiktok.com/@crocodilesauce_fc" label="TikTok" color="#f8fafc">
+        <TikTokIcon />
+      </SocialLink>
+    </span>
+  );
+}
+
+/* ============================ HEADER ============================ */
+
+function Header() {
+  const links = ['Home', 'Match Hub', 'About', 'Viral Gallery', 'Store'];
+  const [active, setActive] = useState('Home');
+  const [open, setOpen] = useState(false);
+  const slug = (l: string) => '#' + l.toLowerCase().replace(/ /g, '-');
+
+  return (
+    <header
+      className="header-pad"
+      style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 60,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        gap: '2rem',
+        padding: '0.9rem 2.5rem',
+        background: 'linear-gradient(180deg, rgb(2 6 23 / 0.94), rgb(2 6 23 / 0.55))',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        borderBottom: '1px solid var(--csfc-copper-30)',
+      }}
+    >
+      <a href="#home" onClick={() => setActive('Home')} style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', textDecoration: 'none' }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={A + 'logo_medallion.png'} alt="CrocodileSauceFC crest" style={{ width: 46, height: 46, filter: 'drop-shadow(0 2px 6px rgb(0 0 0 / 0.6))' }} />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={A + 'wordmark.png'} alt="Crocodile Sauce F.C." style={{ height: 26, width: 'auto', filter: 'drop-shadow(0 2px 5px rgb(0 0 0 / 0.55))' }} />
+      </a>
+
+      <nav className={'nav-links' + (open ? ' open' : '')}>
+        {links.map((l) => (
+          <NavLink key={l} href={slug(l)} active={active === l} onClick={() => { setActive(l); setOpen(false); }}>
+            {l}
+          </NavLink>
+        ))}
+      </nav>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.7rem' }}>
+        <SocialLinks />
+        <span className="nav-toggle" style={{ width: 42, height: 42 }}>
+          <IconButton label="Menu" variant="tactical" active={open} onClick={() => setOpen((o) => !o)}>
+            <Menu />
+          </IconButton>
+        </span>
+      </div>
+    </header>
+  );
+}
+
+/* ===== CHEF — animated mocap studio viewport (hero centerpiece) ===== */
+
+function Led({ style }: { style?: CSSProperties }) {
+  return <span style={{ position: 'absolute', background: '#34d399', boxShadow: 'var(--led-emerald)', ...style }} />;
+}
+
+function ChefStage() {
+  return (
+    <div className="chef-stage" style={{ position: 'relative', width: '100%', maxWidth: 580, justifySelf: 'end' }}>
+      <div
+        style={{
+          position: 'relative',
+          background: 'var(--metal-bronze)',
+          padding: 22,
+          filter: 'var(--cast-bronze) drop-shadow(0 20px 44px rgb(0 0 0 / 0.6))',
+        }}
+      >
+        <Led style={{ top: '10%', left: -2, width: 3, height: 50 }} />
+        <Led style={{ top: '10%', right: -2, width: 3, height: 50 }} />
+        <Led style={{ bottom: '10%', left: '26%', width: 60, height: 3 }} />
+        <Led style={{ bottom: '10%', right: '26%', width: 60, height: 3 }} />
+        <div style={{ position: 'relative', overflow: 'hidden', aspectRatio: '3 / 4', background: 'var(--csfc-teal-deep)', boxShadow: 'var(--bevel-inset)' }}>
+          <video
+            src={A + 'chef_animated.mp4'}
+            poster={A + 'chef_poster.png'}
+            autoPlay
+            loop
+            muted
+            playsInline
+            style={{ position: 'absolute', inset: 0, objectFit: 'cover', objectPosition: '50% 38%', width: '100%', height: '100%' }}
+          />
+          <div style={{ position: 'absolute', inset: 0, background: 'var(--csfc-teal)', mixBlendMode: 'multiply', opacity: 0.5, pointerEvents: 'none' }} />
+          <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse at 50% 40%, transparent 28%, rgb(4 20 26 / 0.55) 72%, rgb(3 12 16 / 0.92) 100%)' }} />
+          <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.18, background: 'repeating-linear-gradient(0deg, rgb(0 0 0 / 0.5) 0 1px, transparent 1px 3px)' }} />
+          <div style={{ position: 'absolute', top: 12, left: 12, right: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <Badge tone="emerald" pulse>REC · Mocap Live</Badge>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6rem', color: 'var(--csfc-text-muted)', letterSpacing: '0.1em', background: 'rgb(2 6 23 / 0.6)', padding: '0.18rem 0.4rem', border: '1px solid var(--csfc-copper-30)' }}>
+              CAM&nbsp;01
+            </span>
+          </div>
+          <div style={{ position: 'absolute', left: 14, right: 14, bottom: 14 }}>
+            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '1.15rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--csfc-text-primary)', textShadow: '0 2px 10px rgb(0 0 0 / 0.9)' }}>
+              &ldquo;Chef&rdquo;
+            </div>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: '0.6rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--csfc-bronze)', marginTop: 3 }}>
+              Captain · No. 10
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ===== LIVE WIRE — world football news feed (mock; becomes a real RSS/API feed in web/) ===== */
+
+function ExtArrow() {
+  return (
+    <svg width={11} height={11} viewBox="0 0 11 11" fill="none" stroke="currentColor" strokeWidth={1.4} aria-hidden="true" style={{ flexShrink: 0, transition: 'transform 0.25s var(--ease-out)' }}>
+      <path d="M3 8L8 3M8 3H4M8 3V7" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function LiveWire() {
+  const items = [
+    { tag: 'World Cup', time: '2m', text: 'Group A permutations: what the squad needs on Matchday 3', href: 'https://www.fifa.com/en/tournaments/mens/worldcup' },
+    { tag: 'Transfers', time: '18m', text: 'Low-Poly United table club-record bid for emerald winger', href: 'https://www.bbc.com/sport/football' },
+    { tag: 'Match Report', time: '1h', text: '“SCALE” passes late fitness test, starts at the back', href: 'https://www.theguardian.com/football' },
+  ];
+
+  return (
+    <div style={{ marginTop: '2.6rem', maxWidth: '40ch' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem', marginBottom: '0.55rem', borderBottom: '1px solid var(--csfc-copper-30)', paddingBottom: '0.5rem' }}>
+        <span style={{ width: 6, height: 6, background: 'var(--csfc-emerald-bright)', boxShadow: '0 0 8px rgb(52 211 153 / 0.7)', animation: 'hubpulse 1.4s ease-in-out infinite', flexShrink: 0 }} />
+        <span style={{ fontFamily: 'var(--font-display)', fontSize: '0.62rem', letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--csfc-emerald-bright)' }}>
+          World Football · Live Wire
+        </span>
+        <span style={{ marginLeft: 'auto', fontFamily: 'var(--font-mono)', fontSize: '0.55rem', letterSpacing: '0.12em', color: 'var(--csfc-text-muted)', border: '1px solid var(--csfc-copper-30)', padding: '0.1rem 0.35rem' }}>
+          AUTO
+        </span>
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        {items.map((it, i) => (
+          <a
+            key={i}
+            href={it.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="wire-row"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'auto 1fr auto',
+              alignItems: 'baseline',
+              gap: '0.6rem',
+              padding: '0.55rem 0',
+              textDecoration: 'none',
+              borderBottom: i < items.length - 1 ? '1px solid rgb(180 83 9 / 0.16)' : 'none',
+            }}
+          >
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.58rem', letterSpacing: '0.06em', color: 'var(--csfc-copper-bright)', whiteSpace: 'nowrap' }}>{it.tag}</span>
+            <span className="wire-text" style={{ fontFamily: 'var(--font-sans)', fontSize: '0.84rem', lineHeight: 1.35, color: 'var(--csfc-text-primary)', transition: 'color 0.25s' }}>
+              {it.text}
+            </span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', color: 'var(--csfc-text-muted)', whiteSpace: 'nowrap' }}>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.58rem' }}>{it.time}</span>
+              <ExtArrow />
+            </span>
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ============================== HERO ============================== */
+
+function Hero() {
+  return (
+    <section id="home" className="anchor hero-sec" data-screen-label="Hero" style={{ position: 'relative', minHeight: '90vh', overflow: 'hidden', padding: '2.5rem 2.5rem 4rem', maxWidth: 1280, margin: '0 auto' }}>
+      <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse at 72% 8%, rgb(52 211 153 / 0.09), transparent 55%), radial-gradient(ellipse at 26% 88%, rgb(180 83 9 / 0.12), transparent 52%)' }} />
+
+      <div className="hero-grid" style={{ position: 'relative', zIndex: 2 }}>
+        <div style={{ position: 'relative', zIndex: 2 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.7rem', marginBottom: '1.3rem', flexWrap: 'wrap' }}>
+            <Badge tone="emerald" pulse>2026 World Squad</Badge>
+            <Badge tone="bronze">Low-Poly United</Badge>
+          </div>
+          <h1 className="logo-free">
+            <span className="logo-free-mark">
+              <span className="lf-panel" aria-hidden="true" />
+              <span className="lf-deco" aria-hidden="true">
+                <i className="cn tl" /><i className="cn tr" /><i className="cn bl" /><i className="cn br" />
+                <i className="tick t" /><i className="tick b" />
+                <i className="cap l" /><i className="cap r" />
+                <span className="node"><i /><span>SQUAD</span></span>
+              </span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img className="lf-glow" src={A + 'wordmark_letters_glow.png'} alt="" aria-hidden="true" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img className="lf-traces" src={A + 'wordmark_letters_traces.svg'} alt="" aria-hidden="true" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img className="lf-bronze" src={A + 'wordmark.png'} alt="Crocodile Sauce F.C." />
+            </span>
+          </h1>
+          <p className="csfc-body" style={{ fontSize: '1.12rem', maxWidth: '42ch', margin: '0 0 2.1rem' }}>
+            The most ferocious low-poly football squad on the planet. Live match HUDs, viral highlight reels, and the legendary &ldquo;Solid Poly Blank&rdquo; kit collection.
+          </p>
+          <div className="hero-stats" style={{ display: 'flex', alignItems: 'center', gap: '1.4rem', marginTop: '0.4rem' }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={A + 'logo_medallion.png'}
+              alt="CrocodileSauceFC challenge-coin crest"
+              style={{ width: 'clamp(124px, 17vw, 168px)', height: 'auto', flexShrink: 0, filter: 'drop-shadow(0 6px 16px rgb(0 0 0 / 0.55))' }}
+            />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '0.78rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--csfc-bronze)' }}>
+                Official Club Crest
+              </span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.7rem', letterSpacing: '0.04em', color: 'var(--csfc-text-muted)' }}>
+                CrocodileSauce F.C · Est. 2026
+              </span>
+            </div>
+          </div>
+          <LiveWire />
+        </div>
+
+        <div className="hero-shield-col" style={{ position: 'relative', zIndex: 3, justifySelf: 'end', width: '100%', maxWidth: 580 }}>
+          <ChefStage />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ============================== ABOUT ============================== */
+
+function GlitchCroc() {
+  const poses = [
+    { src: A + 'hero_croc.png', flip: true, scale: 1.1 },
+    { src: A + 'chef_pose.png', flip: false, scale: 1 },
+  ];
+  const [idx, setIdx] = useState(0);
+  const [glitching, setGlitching] = useState(false);
+
+  useEffect(() => {
+    const id = setInterval(() => setIdx((i) => 1 - i), 5000);
+    return () => clearInterval(id);
+  }, []);
+
+  useEffect(() => {
+    const onTimer = setTimeout(() => setGlitching(true), 0);
+    const offTimer = setTimeout(() => setGlitching(false), 600);
+    return () => {
+      clearTimeout(onTimer);
+      clearTimeout(offTimer);
+    };
+  }, [idx]);
+
+  return (
+    <div className="float-croc" style={{ width: '100%', maxWidth: 420, animation: 'floaty 7s ease-in-out infinite' }}>
+      <div className={'glitch-stage' + (glitching ? ' glitching' : '')}>
+        {poses.map((p, i) => (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            key={i}
+            className="gc"
+            src={p.src}
+            alt="Chef — squad mascot"
+            style={{ opacity: i === idx ? 1 : 0, transform: `translateX(-50%)${p.flip ? ' scaleX(-1)' : ''} scale(${p.scale})` }}
+          />
+        ))}
+        <span className="gc-scan" aria-hidden="true" />
+      </div>
+    </div>
+  );
+}
+
+function About() {
+  return (
+    <section id="about" className="section anchor about-grid" data-screen-label="About">
+      <GlassPanel clip="card" bracket padding="2.6rem">
+        <div className="eyebrow">Est. 2026 · Low-Poly United</div>
+        <h2 className="csfc-display-gradient" style={{ fontSize: '2.4rem', marginBottom: '1.1rem' }}>About The Squad</h2>
+        <p className="csfc-body" style={{ fontSize: '1.08rem', marginBottom: '1rem' }}>
+          CrocodileSauceFC is the world&apos;s first fully faceted football club — eleven low-poly reptiles forged in bronze and emerald, each carrying the signature hot-sauce crest into every World Cup fixture.
+        </p>
+        <p className="csfc-body" style={{ marginBottom: '1.7rem' }}>
+          We broadcast live tactical HUDs, drop viral highlight reels by the hour, and outfit the faithful in the &ldquo;Solid Poly Blank&rdquo; kit line.
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.7rem' }}>
+          <span className="eyebrow" style={{ color: 'var(--csfc-emerald-bright)' }}>Follow The Squad</span>
+          <div style={{ display: 'flex', gap: '0.55rem', flexWrap: 'nowrap' }}>
+            <SocialPill href="https://youtube.com/@CrocodileSauceFC" label="YouTube" handle="@CrocodileSauceFC" color="#ff3d3d">
+              <YouTubeIcon />
+            </SocialPill>
+            <SocialPill href="https://instagram.com/crocodilesaucefc" label="Instagram" handle="@crocodilesaucefc" color="#e879a8">
+              <InstagramIcon />
+            </SocialPill>
+            <SocialPill href="https://tiktok.com/@crocodilesauce_fc" label="TikTok" handle="@crocodilesauce_fc" color="#f8fafc">
+              <TikTokIcon />
+            </SocialPill>
+          </div>
+        </div>
+      </GlassPanel>
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <GlitchCroc />
+      </div>
+    </section>
+  );
+}
+
+/* ======================= VIRAL GALLERY ======================= */
+
+type ShortClip = {
+  title: string;
+  duration: string;
+  views: string;
+  thumb?: string;
+  href?: string;
+  badge?: ReactNode;
+};
+
+function ShortTile({ c }: { c: ShortClip }) {
+  const [hover, setHover] = useState(false);
+  return (
+    <UniBevel>
+      <a
+        href={c.href || '#'}
+        target={c.href ? '_blank' : undefined}
+        rel="noopener noreferrer"
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        style={{
+          position: 'relative',
+          display: 'block',
+          aspectRatio: '9 / 16',
+          textDecoration: 'none',
+          clipPath: 'polygon(13px 0, 100% 0, 100% calc(100% - 13px), calc(100% - 13px) 100%, 0 100%, 0 13px)',
+          border: `1px solid ${hover ? 'var(--csfc-copper-bright)' : 'var(--csfc-copper)'}`,
+          background: c.thumb ? `center/cover no-repeat url(${c.thumb})` : 'repeating-linear-gradient(135deg, #0c1a26 0 16px, #08131d 16px 32px)',
+          boxShadow: hover ? '0 0 22px rgb(180 83 9 / 0.45), 0 14px 30px -14px rgb(0 0 0 / 0.8)' : '0 10px 26px -16px rgb(0 0 0 / 0.7)',
+          transform: hover ? 'translateY(-4px)' : 'none',
+          transition: 'var(--transition-all)',
+          overflow: 'hidden',
+        }}
+      >
+        <span style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'linear-gradient(180deg, rgb(2 8 11 / 0.35) 0%, transparent 26%, transparent 52%, rgb(2 8 11 / 0.88) 100%)' }} />
+        {c.badge && <span style={{ position: 'absolute', top: 9, left: 9, zIndex: 3 }}>{c.badge}</span>}
+        <span style={{ position: 'absolute', top: 9, right: 9, zIndex: 3, fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: '0.62rem', color: 'var(--csfc-text-primary)', background: 'rgb(2 6 14 / 0.72)', padding: '0.15rem 0.4rem', border: '1px solid var(--csfc-copper-30)', letterSpacing: '0.04em' }}>
+          {c.duration}
+        </span>
+        <span
+          style={{
+            position: 'absolute',
+            top: '44%',
+            left: '50%',
+            transform: 'translate(-50%,-50%)',
+            zIndex: 3,
+            width: 46,
+            height: 46,
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            border: `2px solid ${hover ? 'var(--csfc-emerald-bright)' : 'rgb(248 250 252 / 0.85)'}`,
+            clipPath: 'polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px)',
+            background: hover ? 'rgb(21 128 61 / 0.3)' : 'rgb(2 6 14 / 0.4)',
+            boxShadow: hover ? '0 0 16px rgb(52 211 153 / 0.5)' : 'none',
+            transition: 'var(--transition-all)',
+          }}
+        >
+          <svg width={16} height={16} viewBox="0 0 16 16" fill={hover ? 'var(--csfc-emerald-bright)' : '#f8fafc'} aria-hidden="true">
+            <path d="M3 1.5l11 6.5-11 6.5z" />
+          </svg>
+        </span>
+        <span style={{ position: 'absolute', left: 11, right: 11, bottom: 11, zIndex: 3, display: 'flex', flexDirection: 'column', gap: '0.18rem' }}>
+          <span
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontWeight: 700,
+              fontSize: '0.66rem',
+              letterSpacing: '0.06em',
+              textTransform: 'uppercase',
+              color: 'var(--csfc-text-primary)',
+              lineHeight: 1.25,
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+            }}
+          >
+            {c.title}
+          </span>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6rem', color: 'var(--csfc-text-muted)', letterSpacing: '0.02em' }}>{c.views}</span>
+        </span>
+      </a>
+    </UniBevel>
+  );
+}
+
+function ViralGallery() {
+  const [filter, setFilter] = useState('All');
+  const filters = ['All', 'Goals', 'Saves', 'Skills', 'Tunnel'];
+  const clips: ShortClip[] = [
+    { title: 'Messi free-kick rocket', duration: '0:42', views: '2.4M views', badge: <Badge tone="emerald" pulse>Hot</Badge> },
+    { title: 'Croc bicycle kick', duration: '0:18', views: '980K views' },
+    { title: 'Last-minute winner', duration: '1:05', views: '5.1M views', badge: <Badge tone="bronze">Top</Badge> },
+    { title: 'Keeper wonder save', duration: '0:27', views: '1.2M views' },
+    { title: 'Tunnel walkout', duration: '0:33', views: '640K views' },
+    { title: 'Trophy lift', duration: '0:51', views: '3.8M views', badge: <Badge tone="copper">New</Badge> },
+  ];
+
+  return (
+    <section id="viral-gallery" className="section anchor" data-screen-label="Viral Gallery">
+      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.8rem' }}>
+        <div>
+          <div className="eyebrow">Viral Gallery · YouTube Shorts</div>
+          <h2 className="csfc-display-gradient" style={{ fontSize: 'clamp(2rem, 4vw, 3rem)' }}>Trending Clips</h2>
+        </div>
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+          {filters.map((f) => (
+            <Tag key={f} selected={filter === f} onClick={() => setFilter(f)}>{f}</Tag>
+          ))}
+        </div>
+      </div>
+      <div className="gallery-grid">
+        {clips.map((c, i) => <ShortTile key={i} c={c} />)}
+      </div>
+    </section>
+  );
+}
+
+/* ============================ STORE ============================ */
+
+type Product = { img: string; name: string; team: string; price: string };
+
+const PRODUCTS: Product[] = [
+  { img: 'jersey_albiceleste', name: 'Albiceleste Poly', team: 'Argentina', price: '$74' },
+  { img: 'jersey_canary', name: 'Canary Facet', team: 'Brazil', price: '$74' },
+  { img: 'jersey_blanco_rojo', name: 'Blanco Rojo', team: 'Peru', price: '$79' },
+  { img: 'jersey_tricolor', name: 'Tricolore Blank', team: 'France', price: '$74' },
+  { img: 'jersey_verderojo', name: 'Verde Rojo', team: 'Portugal', price: '$74' },
+];
+
+function ProductCard({ p }: { p: Product }) {
+  const [hover, setHover] = useState(false);
+  return (
+    <UniBevel>
+      <div
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        style={{
+          background: hover ? 'var(--metal-bronze-lit)' : 'var(--metal-bronze)',
+          padding: '3px',
+          clipPath: 'var(--clip-card)',
+          transition: 'var(--transition-all)',
+          transform: hover ? 'translateY(-4px)' : 'none',
+          filter: hover ? 'drop-shadow(0 0 14px rgb(207 154 82 / 0.4)) var(--shadow-metal)' : 'var(--shadow-metal)',
+        }}
+      >
+        <div style={{ background: 'linear-gradient(180deg, rgb(9 22 30 / 0.96), rgb(4 16 21 / 0.96))', clipPath: 'var(--clip-card)', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.7rem' }}>
+          <div style={{ position: 'relative', aspectRatio: '3 / 4', overflow: 'hidden', background: 'radial-gradient(ellipse at 50% 40%, #14323a, #04141a)', border: '1px solid var(--csfc-copper-30)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={`${A}${p.img}.png`}
+              alt={p.name}
+              style={{ width: '108%', objectFit: 'contain', transform: hover ? 'scale(1.05)' : 'scale(1)', transition: 'transform 0.4s var(--ease-out)' }}
+            />
+            <span style={{ position: 'absolute', top: 8, left: 8 }}><Badge tone="bronze">{p.team}</Badge></span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+            <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '0.8rem', letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--csfc-text-primary)' }}>{p.name}</span>
+            <span className="csfc-data" style={{ fontSize: '1.05rem' }}>{p.price}</span>
+          </div>
+          <Button variant="cta" size="sm" style={{ width: '100%' }} iconRight={<Ext />}>Buy on Printify</Button>
+        </div>
+      </div>
+    </UniBevel>
+  );
+}
+
+function Store() {
+  return (
+    <section id="store" className="section anchor" data-screen-label="Store">
+      <div style={{ textAlign: 'center' }} className="eyebrow">Locker Room · Printify Drops</div>
+      <h2 className="csfc-display-gradient" style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', textAlign: 'center', marginBottom: '0.5rem' }}>The Armory</h2>
+      <p className="csfc-body" style={{ textAlign: 'center', maxWidth: '52ch', margin: '0 auto 2.6rem' }}>
+        The 2026 World Squad collection. Every kit carries the embossed bronze crest. Printed &amp; shipped via Printify.
+      </p>
+      <div style={{ position: 'relative', margin: '0 auto 3rem', maxWidth: 760, background: 'rgb(52 211 153 / 0.95)', padding: '2px', clipPath: 'var(--clip-hex)', filter: 'drop-shadow(0 0 20px rgb(52 211 153 / 0.4)) drop-shadow(0 20px 44px rgb(0 0 0 / 0.6))' }}>
+        <div style={{ background: 'rgb(34 197 119 / 0.26)', padding: '7px', clipPath: 'var(--clip-hex)' }}>
+          <div style={{ background: 'rgb(6 16 22 / 0.92)', padding: '8px', clipPath: 'var(--clip-hex)' }}>
+            <div style={{ background: 'var(--metal-bronze)', padding: '5px', clipPath: 'var(--clip-hex)', filter: 'var(--raise-3d)' }}>
+              <div style={{ clipPath: 'var(--clip-hex)', background: 'radial-gradient(ellipse at 50% 35%, #16323a, #04141a)', padding: '2.5rem 1rem' }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={A + 'merch_collection.png'} alt="Solid Poly Blank collection" style={{ width: '100%', display: 'block' }} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="store-grid">
+        {PRODUCTS.map((p) => <ProductCard key={p.img} p={p} />)}
+      </div>
+    </section>
+  );
+}
+
+/* ============================ FOOTER ============================ */
+
+function Footer() {
+  return (
+    <footer style={{ position: 'relative', marginTop: '2rem', borderTop: '1px solid var(--csfc-copper-30)', background: 'rgb(2 6 23 / 0.75)' }}>
+      <div className="section footer-grid" style={{ paddingTop: '3rem', paddingBottom: '2.2rem', display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '2.4rem', alignItems: 'start' }}>
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.7rem', marginBottom: '1rem' }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={A + 'logo_medallion.png'} alt="" style={{ width: 44, height: 44 }} />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={A + 'wordmark.png'} alt="Crocodile Sauce F.C." style={{ height: 26, width: 'auto', filter: 'drop-shadow(0 2px 5px rgb(0 0 0 / 0.5))' }} />
+          </div>
+          <p className="csfc-body" style={{ fontSize: '0.95rem', maxWidth: '40ch', marginBottom: '1.4rem' }}>
+            The most ferocious low-poly football squad on the planet. Join the faithful.
+          </p>
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: '0.62rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--csfc-bronze)', marginBottom: '0.55rem' }}>
+            Get In Touch
+          </div>
+          <a href="mailto:crocodilesaucefc@gmail.com" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.92rem', color: 'var(--csfc-emerald-bright)', textDecoration: 'none', letterSpacing: '0.02em' }}>
+            crocodilesaucefc@gmail.com
+          </a>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: '0.62rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--csfc-bronze)' }}>
+            Follow The Squad
+          </div>
+          <SocialLinks />
+        </div>
+      </div>
+      <div className="section" style={{ paddingTop: '1.2rem', paddingBottom: '1.6rem', borderTop: '1px solid var(--csfc-copper-30)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--csfc-text-muted)' }}>© 2026 · Low-Poly United · All facets reserved</span>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--csfc-emerald-bright)' }}>Built faceted · Bronze &amp; Emerald</span>
+      </div>
+    </footer>
+  );
+}
+
+/* ============================== LANDING ============================== */
+
+export function Landing({ hub }: { hub: ReactNode }) {
+  return (
+    <>
+      <div className="bg-photo" />
+      <div className="bg-grad" />
+      <div className="vignette" />
+      <div id="app">
+        <Header />
+        <Hero />
+        <div id="match-hub" className="anchor">{hub}</div>
+        <About />
+        <ViralGallery />
+        <Store />
+        <Footer />
+      </div>
+    </>
+  );
+}

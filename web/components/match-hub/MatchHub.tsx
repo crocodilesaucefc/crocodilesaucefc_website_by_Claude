@@ -309,7 +309,7 @@ export function MatchHub({ initialFixtures, initialDate }: MatchHubProps) {
       <GlobalControls filter={filter} onFilterChange={setFilter} todayIso={todayIso} />
 
       {/* Pane 2 — Scrollable match list */}
-      <GlassPanel clip="panel" bracket={false} padding="0" style={{ marginBottom: '1.6rem' }}>
+      <GlassPanel clip="panel" bracket padding="0" style={{ marginBottom: '1.6rem' }}>
         <div style={{ padding: '0.7rem 1rem', borderBottom: '1px solid var(--csfc-copper-30)', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <span className="csfc-eyebrow" style={{ color: 'var(--csfc-emerald-bright)' }}>
             Fixtures
@@ -360,7 +360,7 @@ export function MatchHub({ initialFixtures, initialDate }: MatchHubProps) {
       </GlassPanel>
 
       {/* Pane 3 — HUD details */}
-      <GlassPanel clip="panel" bracket={false} padding="0" style={{ minHeight: '500px' }}>
+      <GlassPanel clip="panel" bracket padding="0" style={{ minHeight: '500px' }}>
         {/* Tab bar */}
         <div style={{ display: 'flex', borderBottom: '1px solid var(--csfc-copper-30)', alignItems: 'stretch' }}>
           {HUD_TABS.map((t) => (
