@@ -76,20 +76,32 @@ function SocialLink({ href, label, color, children }: SocialLinkProps) {
         height: 50,
         flexShrink: 0,
         display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color,
+        padding: '3px',
         border: `1px solid ${hover ? 'var(--csfc-emerald-bright)' : 'rgb(52 211 153 / 0.95)'}`,
         background: hover ? 'rgb(34 197 119 / 0.40)' : 'rgb(34 197 119 / 0.26)',
-        clipPath: 'polygon(11px 0, 100% 0, 100% 100%, 0 100%, 0 11px)',
         boxShadow: hover
-          ? '0 0 24px rgb(52 211 153 / 0.6), inset 0 0 16px rgb(52 211 153 / 0.2)'
-          : '0 0 16px rgb(52 211 153 / 0.38), inset 0 0 14px rgb(52 211 153 / 0.12)',
+          ? '0 0 22px rgb(52 211 153 / 0.55), inset 0 0 14px rgb(52 211 153 / 0.18)'
+          : '0 0 14px rgb(52 211 153 / 0.34), inset 0 0 12px rgb(52 211 153 / 0.1)',
         transition: 'var(--transition-all)',
         textDecoration: 'none',
       }}
     >
-      <span style={{ width: 25, height: 25, display: 'block' }}>{children}</span>
+      <span style={{ flex: 1, display: 'flex', padding: '2px', background: 'rgb(6 16 22 / 0.92)' }}>
+        <span
+          style={{
+            flex: 1,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color,
+            border: '1.5px solid transparent',
+            background:
+              'linear-gradient(rgb(10 24 32 / 0.96), rgb(6 16 22 / 0.96)) padding-box, linear-gradient(140deg, #9a5824 0%, #b45309 50%, #9a5824 100%) border-box',
+          }}
+        >
+          <span style={{ width: 22, height: 22, display: 'block' }}>{children}</span>
+        </span>
+      </span>
     </a>
   );
 }
@@ -109,25 +121,36 @@ function SocialPill({ href, label, handle, color, children }: SocialPillProps) {
       onMouseLeave={() => setHover(false)}
       style={{
         display: 'inline-flex',
-        alignItems: 'center',
-        gap: '0.6rem',
-        padding: '0.55rem 0.9rem 0.55rem 0.65rem',
+        padding: '3px',
         border: `1px solid ${hover ? 'var(--csfc-emerald-bright)' : 'rgb(52 211 153 / 0.95)'}`,
         background: hover ? 'rgb(34 197 119 / 0.40)' : 'rgb(34 197 119 / 0.26)',
-        clipPath: 'polygon(11px 0, 100% 0, 100% 100%, 0 100%, 0 11px)',
         boxShadow: hover
-          ? '0 0 24px rgb(52 211 153 / 0.6), inset 0 0 16px rgb(52 211 153 / 0.2)'
-          : '0 0 16px rgb(52 211 153 / 0.38), inset 0 0 14px rgb(52 211 153 / 0.12)',
+          ? '0 0 22px rgb(52 211 153 / 0.55), inset 0 0 14px rgb(52 211 153 / 0.18)'
+          : '0 0 14px rgb(52 211 153 / 0.34), inset 0 0 12px rgb(52 211 153 / 0.1)',
         transition: 'var(--transition-all)',
         textDecoration: 'none',
       }}
     >
-      <span style={{ width: 22, height: 22, display: 'block', color, flexShrink: 0 }}>{children}</span>
-      <span style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.15 }}>
-        <span style={{ fontFamily: 'var(--font-display)', fontSize: '0.62rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--csfc-emerald-bright)' }}>
-          {label}
+      <span style={{ display: 'flex', padding: '2px', background: 'rgb(6 16 22 / 0.92)' }}>
+        <span
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.6rem',
+            padding: '0.5rem 0.85rem 0.5rem 0.6rem',
+            border: '1.5px solid transparent',
+            background:
+              'linear-gradient(rgb(10 24 32 / 0.96), rgb(6 16 22 / 0.96)) padding-box, linear-gradient(140deg, #9a5824 0%, #b45309 50%, #9a5824 100%) border-box',
+          }}
+        >
+          <span style={{ width: 22, height: 22, display: 'block', color, flexShrink: 0 }}>{children}</span>
+          <span style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.15 }}>
+            <span style={{ fontFamily: 'var(--font-display)', fontSize: '0.62rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: 'var(--csfc-emerald-bright)' }}>
+              {label}
+            </span>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.62rem', color: 'var(--csfc-text-muted)' }}>{handle}</span>
+          </span>
         </span>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.62rem', color: 'var(--csfc-text-muted)' }}>{handle}</span>
       </span>
     </a>
   );
@@ -216,9 +239,11 @@ function ChefStage() {
         <div
           style={{
             position: 'relative',
-            background: 'var(--metal-bronze)',
-            padding: 22,
-            filter: 'var(--cast-bronze) drop-shadow(0 20px 44px rgb(0 0 0 / 0.6))',
+            borderStyle: 'solid',
+            borderWidth: 14,
+            borderColor: '#0a1c24',
+            background: 'var(--csfc-teal-deep)',
+            boxShadow: 'inset 0 0 0 1px rgb(52 211 153 / 0.14), 0 20px 44px rgb(0 0 0 / 0.6)',
           }}
         >
           <Led style={{ top: '10%', left: -2, width: 3, height: 50 }} />
@@ -616,11 +641,6 @@ function ProductCard({ p }: { p: Product }) {
               loading="lazy"
               style={{ width: '108%', objectFit: 'contain', transform: hover ? 'scale(1.05)' : 'scale(1)', transition: 'transform 0.4s var(--ease-out)' }}
             />
-            <span style={{ position: 'absolute', top: 8, left: 8 }}><Badge tone="bronze">{p.team}</Badge></span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
-            <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '0.8rem', letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--csfc-text-primary)' }}>{p.name}</span>
-            <span className="csfc-data" style={{ fontSize: '1.05rem' }}>{p.price}</span>
           </div>
           <Button variant="cta" size="sm" style={{ width: '100%' }} iconRight={<Ext />}>Shop Now</Button>
         </div>

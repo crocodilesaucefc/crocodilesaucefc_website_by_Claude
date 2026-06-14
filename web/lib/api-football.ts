@@ -82,41 +82,10 @@ function isYouthFixture(f: RawFixture): boolean {
   );
 }
 
-// EPL clubs — covers 2025-26 season + likely promotees; refresh each summer.
-const EPL_CLUBS = new Set([
-  'Arsenal',
-  'Aston Villa',
-  'Brentford',
-  'Brighton & Hove Albion', 'Brighton',
-  'Chelsea',
-  'Crystal Palace',
-  'Everton',
-  'Fulham',
-  'Ipswich Town', 'Ipswich',
-  'Leicester City', 'Leicester',
-  'Liverpool',
-  'Manchester City',
-  'Manchester United',
-  'Newcastle United', 'Newcastle',
-  'Nottingham Forest',
-  'Southampton',
-  'Tottenham Hotspur', 'Tottenham', 'Spurs',
-  'West Ham United', 'West Ham',
-  'Wolverhampton Wanderers', 'Wolves',
-  'AFC Bournemouth', 'Bournemouth',
-  'Leeds United', 'Leeds',
-  'Sunderland',
-  'Sheffield United',
-  'Burnley',
-  'Luton Town',
-]);
-
-function isEplTeam(name: string): boolean {
-  return EPL_CLUBS.has(name);
-}
+const EPL_LEAGUE_ID = 39; // API-Football: Premier League (England)
 
 function isEplFixture(f: RawFixture): boolean {
-  return isEplTeam(f.teams.home.name) || isEplTeam(f.teams.away.name);
+  return f.league.id === EPL_LEAGUE_ID && (f.league.country ?? '').toLowerCase() === 'england';
 }
 
 /** Keep only senior men's internationals and EPL-involved fixtures. */

@@ -15,7 +15,7 @@ type MatchHeaderProps = { fixture: RawFixture | null };
  */
 export function MatchHeader({ fixture }: MatchHeaderProps) {
   return (
-    <GlassPanel clip="panel" bracket padding="1.4rem" className="ds-clip-panel" style={{ height: '100%' }}>
+    <GlassPanel clip="panel" bracket padding="1.4rem" style={{ height: '100%' }}>
       <span className="csfc-display" style={{ display: 'block', fontSize: '0.9rem', marginBottom: '1.2rem' }}>
         Header
       </span>
