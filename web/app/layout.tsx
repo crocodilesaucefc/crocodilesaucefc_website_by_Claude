@@ -3,8 +3,8 @@ import "./globals.css";
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
-  title: "World Cup Hub — CrocodileSauce F.C.",
-  description: "Live World Cup fixtures, scores, and tactical readouts for CrocodileSauce F.C.",
+  title: "CrocodileSauce F.C. — Low-Poly United",
+  description: "The most ferocious low-poly football squad on the planet.",
 };
 
 export default function RootLayout({
