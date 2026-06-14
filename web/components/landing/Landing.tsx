@@ -210,43 +210,48 @@ function Led({ style }: { style?: CSSProperties }) {
 function ChefStage() {
   return (
     <div className="chef-stage" style={{ position: 'relative', width: '100%', maxWidth: 580, justifySelf: 'end' }}>
-      <div
-        style={{
-          position: 'relative',
-          background: 'var(--metal-bronze)',
-          padding: 22,
-          filter: 'var(--cast-bronze) drop-shadow(0 20px 44px rgb(0 0 0 / 0.6))',
-        }}
-      >
-        <Led style={{ top: '10%', left: -2, width: 3, height: 50 }} />
-        <Led style={{ top: '10%', right: -2, width: 3, height: 50 }} />
-        <Led style={{ bottom: '10%', left: '26%', width: 60, height: 3 }} />
-        <Led style={{ bottom: '10%', right: '26%', width: 60, height: 3 }} />
-        <div style={{ position: 'relative', overflow: 'hidden', aspectRatio: '3 / 4', background: 'var(--csfc-teal-deep)', boxShadow: 'var(--bevel-inset)' }}>
-          <video
-            src={A + 'chef_animated.mp4'}
-            poster={A + 'chef_poster.png'}
-            autoPlay
-            loop
-            muted
-            playsInline
-            style={{ position: 'absolute', inset: 0, objectFit: 'cover', objectPosition: '50% 38%', width: '100%', height: '100%' }}
-          />
-          <div style={{ position: 'absolute', inset: 0, background: 'var(--csfc-teal)', mixBlendMode: 'multiply', opacity: 0.5, pointerEvents: 'none' }} />
-          <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse at 50% 40%, transparent 28%, rgb(4 20 26 / 0.55) 72%, rgb(3 12 16 / 0.92) 100%)' }} />
-          <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.18, background: 'repeating-linear-gradient(0deg, rgb(0 0 0 / 0.5) 0 1px, transparent 1px 3px)' }} />
-          <div style={{ position: 'absolute', top: 12, left: 12, right: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <Badge tone="emerald" pulse>REC · Mocap Live</Badge>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6rem', color: 'var(--csfc-text-muted)', letterSpacing: '0.1em', background: 'rgb(2 6 23 / 0.6)', padding: '0.18rem 0.4rem', border: '1px solid var(--csfc-copper-30)' }}>
-              CAM&nbsp;01
-            </span>
-          </div>
-          <div style={{ position: 'absolute', left: 14, right: 14, bottom: 14 }}>
-            <div style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '1.15rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--csfc-text-primary)', textShadow: '0 2px 10px rgb(0 0 0 / 0.9)' }}>
-              &ldquo;Chef&rdquo;
+      <div style={{ position: 'relative', padding: '7px',
+        background: 'rgb(34 197 119 / 0.26)',
+        border: '1px solid rgb(52 211 153 / 0.95)',
+        boxShadow: '0 0 24px rgb(52 211 153 / 0.38), inset 0 0 16px rgb(52 211 153 / 0.12)' }}>
+        <div
+          style={{
+            position: 'relative',
+            background: 'var(--metal-bronze)',
+            padding: 22,
+            filter: 'var(--cast-bronze) drop-shadow(0 20px 44px rgb(0 0 0 / 0.6))',
+          }}
+        >
+          <Led style={{ top: '10%', left: -2, width: 3, height: 50 }} />
+          <Led style={{ top: '10%', right: -2, width: 3, height: 50 }} />
+          <Led style={{ bottom: '10%', left: '26%', width: 60, height: 3 }} />
+          <Led style={{ bottom: '10%', right: '26%', width: 60, height: 3 }} />
+          <div style={{ position: 'relative', overflow: 'hidden', aspectRatio: '3 / 4', background: 'var(--csfc-teal-deep)', boxShadow: 'var(--bevel-inset)' }}>
+            <video
+              src={A + 'chef_animated.mp4'}
+              poster={A + 'chef_poster.png'}
+              autoPlay
+              loop
+              muted
+              playsInline
+              style={{ position: 'absolute', inset: 0, objectFit: 'cover', objectPosition: '50% 38%', width: '100%', height: '100%' }}
+            />
+            <div style={{ position: 'absolute', inset: 0, background: 'var(--csfc-teal)', mixBlendMode: 'multiply', opacity: 0.5, pointerEvents: 'none' }} />
+            <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse at 50% 40%, transparent 28%, rgb(4 20 26 / 0.55) 72%, rgb(3 12 16 / 0.92) 100%)' }} />
+            <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', opacity: 0.18, background: 'repeating-linear-gradient(0deg, rgb(0 0 0 / 0.5) 0 1px, transparent 1px 3px)' }} />
+            <div style={{ position: 'absolute', top: 12, left: 12, right: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <Badge tone="emerald" pulse>REC · Mocap Live</Badge>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6rem', color: 'var(--csfc-text-muted)', letterSpacing: '0.1em', background: 'rgb(2 6 23 / 0.6)', padding: '0.18rem 0.4rem', border: '1px solid var(--csfc-copper-30)' }}>
+                CAM&nbsp;01
+              </span>
             </div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: '0.6rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--csfc-bronze)', marginTop: 3 }}>
-              Captain · No. 10
+            <div style={{ position: 'absolute', left: 14, right: 14, bottom: 14 }}>
+              <div style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '1.15rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--csfc-text-primary)', textShadow: '0 2px 10px rgb(0 0 0 / 0.9)' }}>
+                &ldquo;Chef&rdquo;
+              </div>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: '0.6rem', letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--csfc-bronze)', marginTop: 3 }}>
+                Captain · No. 10
+              </div>
             </div>
           </div>
         </div>
@@ -615,7 +620,7 @@ function ProductCard({ p }: { p: Product }) {
             <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '0.8rem', letterSpacing: '0.06em', textTransform: 'uppercase', color: 'var(--csfc-text-primary)' }}>{p.name}</span>
             <span className="csfc-data" style={{ fontSize: '1.05rem' }}>{p.price}</span>
           </div>
-          <Button variant="cta" size="sm" style={{ width: '100%' }} iconRight={<Ext />}>Buy on Printify</Button>
+          <Button variant="cta" size="sm" style={{ width: '100%' }} iconRight={<Ext />}>Shop Now</Button>
         </div>
       </div>
     </UniBevel>
@@ -625,19 +630,22 @@ function ProductCard({ p }: { p: Product }) {
 function Store() {
   return (
     <section id="store" className="section anchor" data-screen-label="Store">
-      <div style={{ textAlign: 'center' }} className="eyebrow">Locker Room · Printify Drops</div>
+      <div style={{ textAlign: 'center' }} className="eyebrow">Locker Room · Squad Drops</div>
       <h2 className="csfc-display-gradient" style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', textAlign: 'center', marginBottom: '0.5rem' }}>The Armory</h2>
       <p className="csfc-body" style={{ textAlign: 'center', maxWidth: '52ch', margin: '0 auto 2.6rem' }}>
-        The 2026 World Squad collection. Every kit carries the embossed bronze crest. Printed &amp; shipped via Printify.
+        The 2026 World Squad collection. Every kit carries the embossed bronze crest. Printed &amp; shipped worldwide.
       </p>
-      <div style={{ position: 'relative', margin: '0 auto 3rem', maxWidth: 760, background: 'rgb(52 211 153 / 0.95)', padding: '2px', clipPath: 'var(--clip-hex)', filter: 'drop-shadow(0 0 20px rgb(52 211 153 / 0.4)) drop-shadow(0 20px 44px rgb(0 0 0 / 0.6))' }}>
-        <div style={{ background: 'rgb(34 197 119 / 0.26)', padding: '7px', clipPath: 'var(--clip-hex)' }}>
-          <div style={{ background: 'rgb(6 16 22 / 0.92)', padding: '8px', clipPath: 'var(--clip-hex)' }}>
-            <div style={{ background: 'var(--metal-bronze)', padding: '5px', clipPath: 'var(--clip-hex)', filter: 'var(--raise-3d)' }}>
-              <div style={{ clipPath: 'var(--clip-hex)', background: 'radial-gradient(ellipse at 50% 35%, #16323a, #04141a)', padding: '2.5rem 1rem' }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={A + 'merch_collection.png'} alt="Solid Poly Blank collection" style={{ width: '100%', display: 'block' }} />
-              </div>
+      <div style={{ position: 'relative', margin: '0 auto 3rem', maxWidth: 760,
+        background: 'rgb(34 197 119 / 0.26)', padding: '7px',
+        border: '1px solid rgb(52 211 153 / 0.95)',
+        boxShadow: '0 0 24px rgb(52 211 153 / 0.38), inset 0 0 16px rgb(52 211 153 / 0.12)' }}>
+        <div style={{ background: 'rgb(6 16 22 / 0.92)', padding: '8px' }}>
+          <div style={{ border: '2px solid transparent',
+            background: 'linear-gradient(rgb(10 24 32 / 0.96), rgb(6 16 22 / 0.96)) padding-box, linear-gradient(140deg, #9a5824 0%, #b45309 50%, #9a5824 100%) border-box',
+            boxShadow: '0 14px 40px -22px rgb(0 0 0 / 0.85)' }}>
+            <div style={{ background: 'radial-gradient(ellipse at 50% 35%, #16323a, #04141a)', padding: '1.4rem 1rem' }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={A + 'merch_collection.jpg'} alt="CrocodileSauce F.C. 2026 World Squad collection" style={{ width: '100%', display: 'block' }} />
             </div>
           </div>
         </div>
