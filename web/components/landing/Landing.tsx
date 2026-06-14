@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
+import Image from 'next/image';
 import { Badge, Button, GlassPanel, IconButton, NavLink, Tag, UniBevel } from '@/components/ds';
 
 const A = '/assets/';
@@ -175,10 +176,8 @@ function Header() {
       }}
     >
       <a href="#home" onClick={() => setActive('Home')} style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', textDecoration: 'none' }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={A + 'logo_medallion.png'} alt="CrocodileSauceFC crest" style={{ width: 46, height: 46, filter: 'drop-shadow(0 2px 6px rgb(0 0 0 / 0.6))' }} />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={A + 'wordmark.png'} alt="Crocodile Sauce F.C." style={{ height: 26, width: 'auto', filter: 'drop-shadow(0 2px 5px rgb(0 0 0 / 0.55))' }} />
+        <Image src={A + 'logo_medallion.png'} alt="CrocodileSauceFC crest" width={46} height={46} style={{ width: 46, height: 46, filter: 'drop-shadow(0 2px 6px rgb(0 0 0 / 0.6))' }} />
+        <Image src={A + 'wordmark.png'} alt="Crocodile Sauce F.C." width={922} height={128} style={{ height: 26, width: 'auto', filter: 'drop-shadow(0 2px 5px rgb(0 0 0 / 0.55))' }} />
       </a>
 
       <nav className={'nav-links' + (open ? ' open' : '')}>
@@ -230,6 +229,7 @@ function ChefStage() {
             <video
               src={A + 'chef_animated.mp4'}
               poster={A + 'chef_poster.png'}
+              preload="metadata"
               autoPlay
               loop
               muted
@@ -415,6 +415,7 @@ function GlitchCroc() {
             className="gc"
             src={p.src}
             alt="Chef — squad mascot"
+            loading="lazy"
             style={{ opacity: i === idx ? 1 : 0, transform: `translateX(-50%)${p.flip ? ' scaleX(-1)' : ''} scale(${p.scale})` }}
           />
         ))}
@@ -612,6 +613,7 @@ function ProductCard({ p }: { p: Product }) {
             <img
               src={`${A}${p.img}.png`}
               alt={p.name}
+              loading="lazy"
               style={{ width: '108%', objectFit: 'contain', transform: hover ? 'scale(1.05)' : 'scale(1)', transition: 'transform 0.4s var(--ease-out)' }}
             />
             <span style={{ position: 'absolute', top: 8, left: 8 }}><Badge tone="bronze">{p.team}</Badge></span>
@@ -644,8 +646,14 @@ function Store() {
             background: 'linear-gradient(rgb(10 24 32 / 0.96), rgb(6 16 22 / 0.96)) padding-box, linear-gradient(140deg, #9a5824 0%, #b45309 50%, #9a5824 100%) border-box',
             boxShadow: '0 14px 40px -22px rgb(0 0 0 / 0.85)' }}>
             <div style={{ background: 'radial-gradient(ellipse at 50% 35%, #16323a, #04141a)', padding: '1.4rem 1rem' }}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={A + 'merch_collection.jpg'} alt="CrocodileSauce F.C. 2026 World Squad collection" style={{ width: '100%', display: 'block' }} />
+              <Image
+                src={A + 'merch_collection.jpg'}
+                alt="CrocodileSauce F.C. 2026 World Squad collection"
+                width={1600}
+                height={893}
+                sizes="(max-width: 800px) 100vw, 760px"
+                style={{ width: '100%', height: 'auto', display: 'block' }}
+              />
             </div>
           </div>
         </div>
@@ -665,10 +673,8 @@ function Footer() {
       <div className="section footer-grid" style={{ paddingTop: '3rem', paddingBottom: '2.2rem', display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: '2.4rem', alignItems: 'start' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.7rem', marginBottom: '1rem' }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={A + 'logo_medallion.png'} alt="" style={{ width: 44, height: 44 }} />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={A + 'wordmark.png'} alt="Crocodile Sauce F.C." style={{ height: 26, width: 'auto', filter: 'drop-shadow(0 2px 5px rgb(0 0 0 / 0.5))' }} />
+            <Image src={A + 'logo_medallion.png'} alt="" width={44} height={44} style={{ width: 44, height: 44 }} />
+            <Image src={A + 'wordmark.png'} alt="Crocodile Sauce F.C." width={922} height={128} style={{ height: 26, width: 'auto', filter: 'drop-shadow(0 2px 5px rgb(0 0 0 / 0.5))' }} />
           </div>
           <p className="csfc-body" style={{ fontSize: '0.95rem', maxWidth: '40ch', marginBottom: '1.4rem' }}>
             The most ferocious low-poly football squad on the planet. Join the faithful.
