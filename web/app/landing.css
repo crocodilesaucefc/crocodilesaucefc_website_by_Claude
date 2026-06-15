@@ -22,7 +22,11 @@
   position: fixed; inset: 0; z-index: 0; pointer-events: none;
   background: radial-gradient(ellipse at 50% 40%, transparent 58%, rgb(0 0 0 / 0.42) 100%);
 }
-#app { position: relative; z-index: 1; min-height: 100vh; }
+html { overflow-x: hidden; }
+html, body { margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; }
+body { background: #04141a; color: var(--text-body); overflow-x: hidden; width: 100%; max-width: 100%; }
+#app { position: relative; z-index: 1; min-height: 100vh; width: 100%; max-width: 100%; overflow-x: clip; }
 
 /* ---- Hero floating mascot ---- */
 @keyframes floaty { 0%,100% { transform: translateY(0) rotate(-0.4deg); } 50% { transform: translateY(-22px) rotate(0.4deg); } }
@@ -225,4 +229,11 @@
   .gallery-grid { grid-template-columns: 1fr 1fr; }
   .store-grid { grid-template-columns: 1fr; }
   .hero-stats { gap: 1.3rem !important; }
+}
+@media (max-width: 980px) {
+  .section { width: 100%; max-width: 100%; }
+  .logo-free { width: 100%; max-width: 100%; }
+  .lf-panel { left: 0; right: 0; }
+  .lf-deco { inset: -6% 0; }
+  img, video, svg { max-width: 100%; }
 }

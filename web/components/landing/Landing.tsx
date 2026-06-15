@@ -464,7 +464,7 @@ function About() {
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.7rem' }}>
           <span className="eyebrow" style={{ color: 'var(--csfc-emerald-bright)' }}>Follow The Squad</span>
-          <div style={{ display: 'flex', gap: '0.55rem', flexWrap: 'nowrap' }}>
+          <div style={{ display: 'flex', gap: '0.55rem', flexWrap: 'wrap' }}>
             <SocialPill href="https://youtube.com/@CrocodileSauceFC" label="YouTube" handle="@CrocodileSauceFC" color="#ff3d3d">
               <YouTubeIcon />
             </SocialPill>
