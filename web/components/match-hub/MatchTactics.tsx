@@ -20,15 +20,19 @@ function minuteLabel(event: RawEvent): string {
   return extra ? `${elapsed}+${extra}'` : `${elapsed}'`;
 }
 
-/** Map "player who started" → who replaced them + when, for one team. */
-function buildSubMap(events: RawEvent[], teamId: number): Map<string, SubInfo> {
-  const map = new Map<string, SubInfo>();
+/**
+ * Map "starter who went off" (by id) → who replaced them + when, for one team.
+ * In API-Football `subst` events, `player` is the substitute coming ON and
+ * `assist` is the starter going OFF.
+ */
+function buildSubMap(events: RawEvent[], teamId: number): Map<number, SubInfo> {
+  const map = new Map<number, SubInfo>();
   for (const e of events) {
     if (e.type !== 'subst' || e.team.id !== teamId) continue;
-    const playerOut = e.assist?.name;
-    const playerIn = e.player.name;
-    if (!playerOut || !playerIn) continue;
-    map.set(playerOut, { who: playerIn, min: minuteLabel(e) });
+    const playerOutId = e.assist?.id;
+    const playerInName = e.player.name;
+    if (playerOutId == null || !playerInName) continue;
+    map.set(playerOutId, { who: playerInName, min: minuteLabel(e) });
   }
   return map;
 }
@@ -131,7 +135,7 @@ function TeamColumn({
   cardMap,
 }: {
   lineup: RawLineup;
-  subMap: Map<string, SubInfo>;
+  subMap: Map<number, SubInfo>;
   cameOnMap: Map<number, SubInfo>;
   cardMap: Map<number, CardInfo[]>;
 }) {
@@ -157,7 +161,7 @@ function TeamColumn({
         <PlayerRow
           key={p.player.id ?? `xi-${i}`}
           player={p}
-          sub={p.player.name ? subMap.get(p.player.name) : undefined}
+          sub={p.player.id != null ? subMap.get(p.player.id) : undefined}
           cards={p.player.id != null ? cardMap.get(p.player.id) : undefined}
           isCaptain={p.player.captain === true}
         />
@@ -237,7 +241,8 @@ export function MatchTactics({ fixture, isLive = false }: Props) {
 const playerRowStyle: CSSProperties = {
   display: 'flex',
   alignItems: 'center',
-  gap: '0.5rem',
+  flexWrap: 'wrap',
+  gap: '0.2rem 0.5rem',
   padding: '0.3rem 0',
   borderBottom: '1px solid var(--csfc-copper-30)',
   minWidth: 0,
