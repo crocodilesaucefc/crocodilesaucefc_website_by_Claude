@@ -2,15 +2,38 @@
 
 import type { CSSProperties } from 'react';
 
-import { useFixtureLineups } from '@/lib/queries';
-import type { RawFixture, RawLineup, RawLineupPlayer } from '@/lib/types';
+import { useFixtureEvents, useFixtureLineups } from '@/lib/queries';
+import type { RawEvent, RawFixture, RawLineup, RawLineupPlayer } from '@/lib/types';
 import { HudSkeleton } from './Skeleton';
 
 type Props = { fixture: RawFixture | null; isLive?: boolean };
 
+type SubInfo = { who: string; min: string };
+
+// ── Substitution helpers ──────────────────────────────────────────────────────
+
+/** API-Sports' own minute fields, translated literally — `67` → `67'`, `{elapsed:90, extra:3}` → `90+3'`. */
+function minuteLabel(event: RawEvent): string {
+  const { elapsed, extra } = event.time;
+  return extra ? `${elapsed}+${extra}'` : `${elapsed}'`;
+}
+
+/** Map "player who started" → who replaced them + when, for one team. */
+function buildSubMap(events: RawEvent[], teamId: number): Map<string, SubInfo> {
+  const map = new Map<string, SubInfo>();
+  for (const e of events) {
+    if (e.type !== 'subst' || e.team.id !== teamId) continue;
+    const playerOut = e.assist?.name;
+    const playerIn = e.player.name;
+    if (!playerOut || !playerIn) continue;
+    map.set(playerOut, { who: playerIn, min: minuteLabel(e) });
+  }
+  return map;
+}
+
 // ── Player row ─────────────────────────────────────────────────────────────────
 
-function PlayerRow({ player }: { player: RawLineupPlayer }) {
+function PlayerRow({ player, sub }: { player: RawLineupPlayer; sub?: SubInfo }) {
   const { number, name } = player.player;
   const displayName = name
     ? name.split(' ').length > 1
@@ -23,13 +46,24 @@ function PlayerRow({ player }: { player: RawLineupPlayer }) {
       <span className="csfc-data" style={{ fontSize: '0.72rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
         {displayName}
       </span>
+      {sub && (
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', marginLeft: 'auto', flexShrink: 0 }}>
+          <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 8h13M17 8l-3.5-3.5M17 8l-3.5 3.5" fill="none" stroke="#34d399" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M20 16H7M7 16l3.5-3.5M7 16l3.5 3.5" fill="none" stroke="#34d399" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6rem', color: 'var(--csfc-text-muted)', whiteSpace: 'nowrap' }}>
+            {sub.who} {sub.min}
+          </span>
+        </span>
+      )}
     </div>
   );
 }
 
 // ── Team column ────────────────────────────────────────────────────────────────
 
-function TeamColumn({ lineup }: { lineup: RawLineup }) {
+function TeamColumn({ lineup, subMap }: { lineup: RawLineup; subMap: Map<string, SubInfo> }) {
   const starters = lineup.startXI ?? [];
   const subs = lineup.substitutes ?? [];
 
@@ -42,14 +76,14 @@ function TeamColumn({ lineup }: { lineup: RawLineup }) {
         </span>
         {lineup.formation && (
           <span className="csfc-eyebrow" style={{ fontSize: '0.6rem', color: 'var(--csfc-text-muted)' }}>
-            Formation: {lineup.formation}
+            Formation {lineup.formation}
           </span>
         )}
       </div>
 
       {/* Starting XI */}
       {starters.map((p, i) => (
-        <PlayerRow key={p.player.id ?? `xi-${i}`} player={p} />
+        <PlayerRow key={p.player.id ?? `xi-${i}`} player={p} sub={p.player.name ? subMap.get(p.player.name) : undefined} />
       ))}
 
       {/* Substitutes */}
@@ -74,6 +108,7 @@ function TeamColumn({ lineup }: { lineup: RawLineup }) {
 export function MatchTactics({ fixture, isLive = false }: Props) {
   const fixtureId = fixture ? String(fixture.fixture.id) : null;
   const lineups = useFixtureLineups(fixtureId, isLive);
+  const events = useFixtureEvents(fixtureId, isLive);
 
   if (!fixture) return <p className="csfc-body">Select a match above to see the line-ups.</p>;
   if (lineups.isLoading) return <HudSkeleton />;
@@ -87,14 +122,15 @@ export function MatchTactics({ fixture, isLive = false }: Props) {
   );
 
   const [home, away] = lineups.data;
+  const eventList = events.data ?? [];
 
   return (
     /* BBC-style 2-column mirror layout — home left, away right, shared divider */
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1px 1fr', gap: '0 1.2rem', alignItems: 'start' }}>
-      {home && <TeamColumn lineup={home} />}
+    <div className="hud-lineups" style={{ display: 'grid', gridTemplateColumns: '1fr 1px 1fr', gap: '0 1.2rem', alignItems: 'start' }}>
+      {home && <TeamColumn lineup={home} subMap={buildSubMap(eventList, home.team.id)} />}
       {/* Centre divider */}
       <div style={{ width: 1, background: 'var(--csfc-copper-30)', alignSelf: 'stretch' }} />
-      {away && <TeamColumn lineup={away} />}
+      {away && <TeamColumn lineup={away} subMap={buildSubMap(eventList, away.team.id)} />}
     </div>
   );
 }

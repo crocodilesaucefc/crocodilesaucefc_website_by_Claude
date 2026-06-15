@@ -13,27 +13,27 @@ const API_KEY = process.env.API_FOOTBALL_KEY;
 
 // ── Status derivation (date → FixtureStatus) ──────────────────────────────────
 
-/** Returns the ISO YYYY-MM-DD for today in UTC — used for horizon and cache keying. */
-export function serverTodayIso(): string {
+/** Returns the ISO YYYY-MM-DD for "today" in the given IANA timezone — used for horizon and cache keying. */
+export function serverTodayIso(timeZone: string = 'America/Vancouver'): string {
   return new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'UTC',
+    timeZone,
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
   }).format(new Date());
 }
 
-/** Derive feed type from a calendar date vs server-side today. */
-export function deriveStatus(date: string): FixtureStatus {
-  const today = serverTodayIso();
+/** Derive feed type from a calendar date vs "today" in the given timezone. */
+export function deriveStatus(date: string, timeZone?: string): FixtureStatus {
+  const today = serverTodayIso(timeZone);
   if (date < today) return 'result';
   if (date > today) return 'upcoming';
   return 'live';
 }
 
-/** Tiered `next.revalidate` window for the fixtures fetch, based on date vs today. */
-function revalidateForDate(dateIso: string): number {
-  const today = serverTodayIso();
+/** Tiered `next.revalidate` window for the fixtures fetch, based on date vs "today" in the given timezone. */
+function revalidateForDate(dateIso: string, timeZone: string): number {
+  const today = serverTodayIso(timeZone);
   if (dateIso < today) return 86400; // past — finished results never change
   if (dateIso > today) return 3600;  // upcoming — fixtures/kickoffs rarely change before match day
   return 25;                          // today — live scores need freshness
@@ -56,7 +56,7 @@ function isWithinHorizon(date: string): boolean {
 
 // ── Immutable cache for historical dates ──────────────────────────────────────
 
-// Keyed by ISO date string; set once, never invalidated — past results don't change.
+// Keyed by `${date}__${timezone}`; set once, never invalidated — past results don't change.
 const historicalCache = new Map<string, RawFixture[]>();
 
 // ── Content filter ─────────────────────────────────────────────────────────────
@@ -141,8 +141,8 @@ async function callApiFootball<T>(path: string, params: Record<string, string>, 
 
 // ── Fixtures fetch (always date-keyed) ────────────────────────────────────────
 
-async function fetchFixtures(date: string): Promise<RawFixture[]> {
-  return callApiFootball<RawFixture>('/fixtures', { date }, revalidateForDate(date));
+async function fetchFixtures(date: string, timezone: string): Promise<RawFixture[]> {
+  return callApiFootball<RawFixture>('/fixtures', { date, timezone }, revalidateForDate(date, timezone));
 }
 
 // ── Public API ─────────────────────────────────────────────────────────────────
@@ -150,6 +150,8 @@ async function fetchFixtures(date: string): Promise<RawFixture[]> {
 export type FixturesQuery = {
   /** ISO YYYY-MM-DD. Navigation is 100% date-driven; status is derived here. */
   date: string;
+  /** IANA timezone — drives both "today" and the API's date bucketing. */
+  timezone?: string;
 };
 
 /**
@@ -160,28 +162,29 @@ export type FixturesQuery = {
  * we return [] — blank is always better than wrong data.
  */
 export async function getFixtures(query: FixturesQuery): Promise<RawFixture[]> {
-  const { date } = query;
+  const { date, timezone = 'America/Vancouver' } = query;
 
   // No API key at all → serve mock fixtures for UI development only.
-  if (!isConfigured()) return getMockFixtures(deriveStatus(date));
+  if (!isConfigured()) return getMockFixtures(deriveStatus(date, timezone));
 
   // Outside 7-day horizon → nothing to show.
   if (!isWithinHorizon(date)) return [];
 
-  const today = serverTodayIso();
+  const today = serverTodayIso(timezone);
   const isPast = date < today;
+  const cacheKey = `${date}__${timezone}`;
 
   // Historical dates: serve from immutable cache without hitting the API again.
-  if (isPast && historicalCache.has(date)) {
-    return historicalCache.get(date)!;
+  if (isPast && historicalCache.has(cacheKey)) {
+    return historicalCache.get(cacheKey)!;
   }
 
   try {
-    const raw = await fetchFixtures(date);
+    const raw = await fetchFixtures(date, timezone);
     const filtered = filterFixtures(raw);
 
     if (isPast && filtered.length > 0) {
-      historicalCache.set(date, filtered);
+      historicalCache.set(cacheKey, filtered);
     }
 
     return filtered; // may be [] — UI shows "No fixtures for this date"

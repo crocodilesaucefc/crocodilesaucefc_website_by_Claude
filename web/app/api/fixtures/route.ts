@@ -4,12 +4,18 @@ import { getFixtures, serverTodayIso } from '@/lib/api-football';
 
 const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
+const DEFAULT_TIMEZONE = 'America/Vancouver';
+
 /**
  * Date-driven fixture proxy — keeps API_FOOTBALL_KEY server-side.
  * Navigation is 100% date-keyed; status (live/result/upcoming) is derived
- * server-side from the date vs today.
+ * server-side from the date vs "today" in the requested timezone.
  *
- * GET /api/fixtures?date=YYYY-MM-DD
+ * GET /api/fixtures?date=YYYY-MM-DD&tz=America/Vancouver
+ *
+ * `tz` is an IANA timezone — it drives both the API's date bucketing and
+ * the "today" comparison used for cache tiering. Falls back to
+ * America/Vancouver if missing.
  *
  * Dates outside the T±7 horizon return { fixtures: [] } — the client should
  * surface a "no fixtures outside the 7-day window" message in that case.
@@ -17,6 +23,8 @@ const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 export async function GET(request: Request) {
   const params = new URL(request.url).searchParams;
   const date = params.get('date');
+  const tzParam = params.get('tz');
+  const timezone = tzParam && tzParam.trim() ? tzParam : DEFAULT_TIMEZONE;
 
   if (!date || !ISO_DATE_RE.test(date)) {
     return NextResponse.json(
@@ -26,10 +34,10 @@ export async function GET(request: Request) {
   }
 
   try {
-    const fixtures = await getFixtures({ date });
+    const fixtures = await getFixtures({ date, timezone });
     const res = NextResponse.json({ fixtures });
 
-    const today = serverTodayIso();
+    const today = serverTodayIso(timezone);
     if (date < today) {
       res.headers.set('Cache-Control', 'public, s-maxage=86400, stale-while-revalidate=604800');
     } else if (date > today) {

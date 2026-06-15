@@ -369,6 +369,7 @@ p { margin: 0; }
   .section { padding: 3.5rem 1.2rem; }
   .stat-grid { grid-template-columns: 1fr 1fr !important; }
   .hub-panel-pad { padding: 1.1rem !important; }
+  .hud-lineups { grid-template-columns: 1fr !important; gap: 1.9rem !important; }
 }
 
 @keyframes csfcPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }

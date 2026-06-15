@@ -23,10 +23,10 @@ async function fetchJson<T>(url: string): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-function fetchFixturesByDate(date: string): Promise<RawFixture[]> {
-  return fetchJson<{ fixtures: RawFixture[] }>(`/api/fixtures?date=${encodeURIComponent(date)}`).then(
-    (r) => r.fixtures,
-  );
+function fetchFixturesByDate(date: string, timezone: string): Promise<RawFixture[]> {
+  return fetchJson<{ fixtures: RawFixture[] }>(
+    `/api/fixtures?date=${encodeURIComponent(date)}&tz=${encodeURIComponent(timezone)}`,
+  ).then((r) => r.fixtures);
 }
 
 /** Shift an ISO YYYY-MM-DD date by `days` (UTC, DST-safe). */
@@ -37,14 +37,15 @@ function shiftIso(iso: string, days: number): string {
 }
 
 /**
- * Fetch fixtures for one calendar date.
- * - `autoRefresh` should be true only when `date` is today — keeps the live
- *   feed updating without polling dates that can't change.
+ * Fetch fixtures for one calendar date, bucketed by the given IANA timezone.
+ * - `autoRefresh` should be true only when `date` is "today" in that
+ *   timezone — keeps the live feed updating without polling dates that
+ *   can't change.
  */
-export function useFixtures(date: string, autoRefresh: boolean, initialData?: RawFixture[]) {
+export function useFixtures(date: string, timezone: string, autoRefresh: boolean, initialData?: RawFixture[]) {
   return useQuery({
-    queryKey: ['fixtures', date],
-    queryFn: () => fetchFixturesByDate(date),
+    queryKey: ['fixtures', date, timezone],
+    queryFn: () => fetchFixturesByDate(date, timezone),
     initialData,
     placeholderData: keepPreviousData,
     staleTime: STALE_MS,
@@ -56,17 +57,17 @@ export function useFixtures(date: string, autoRefresh: boolean, initialData?: Ra
  * Prefetches yesterday's and tomorrow's fixtures so the first click on the
  * date strip is instant.
  */
-export function usePrefetchNeighbourDates(activeDate: string) {
+export function usePrefetchNeighbourDates(activeDate: string, timezone: string) {
   const qc = useQueryClient();
   useEffect(() => {
     for (const d of [shiftIso(activeDate, -1), shiftIso(activeDate, 1)]) {
       qc.prefetchQuery({
-        queryKey: ['fixtures', d],
-        queryFn: () => fetchFixturesByDate(d),
+        queryKey: ['fixtures', d, timezone],
+        queryFn: () => fetchFixturesByDate(d, timezone),
         staleTime: STALE_MS,
       });
     }
-  }, [activeDate, qc]);
+  }, [activeDate, timezone, qc]);
 }
 
 /** Statuses that indicate a match is currently in progress. */

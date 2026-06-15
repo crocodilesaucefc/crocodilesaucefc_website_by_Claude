@@ -68,11 +68,11 @@ function buildSplitGoalScorers(
   events: RawEvent[],
   homeTeamId: number,
   awayTeamId: number,
-): { home: string; away: string } {
+): { home: string[]; away: string[] } {
   const goals = events.filter((e) => e.type === 'Goal');
   return {
-    home: goals.filter((e) => e.team.id === homeTeamId).map(fmtScorer).join(', '),
-    away: goals.filter((e) => e.team.id === awayTeamId).map(fmtScorer).join(', '),
+    home: goals.filter((e) => e.team.id === homeTeamId).map(fmtScorer),
+    away: goals.filter((e) => e.team.id === awayTeamId).map(fmtScorer),
   };
 }
 
@@ -121,8 +121,8 @@ function FixtureRow({
   raw: RawFixture;
   active: boolean;
   onClick: () => void;
-  homeGoalScorers: string;
-  awayGoalScorers: string;
+  homeGoalScorers: string[];
+  awayGoalScorers: string[];
   formatDateTime: (iso: string, opts?: Intl.DateTimeFormatOptions) => string;
 }) {
   const { teams, goals, fixture, league, score } = raw;
@@ -143,7 +143,7 @@ function FixtureRow({
     ? formatDateTime(fixture.date, { hour: 'numeric', minute: '2-digit' })
     : null;
 
-  const showScorers = active && (homeGoalScorers || awayGoalScorers);
+  const hasScorers = homeGoalScorers.length > 0 || awayGoalScorers.length > 0;
 
   return (
     <button
@@ -193,37 +193,34 @@ function FixtureRow({
         </span>
       </div>
 
-      {/* Row 2: scorers flanking status, or just status */}
-      {showScorers ? (
-        <>
-          <div style={{ textAlign: 'right', minWidth: 0, overflow: 'hidden' }}>
-            <span className="csfc-eyebrow" style={{ fontSize: '0.6rem', color: 'var(--csfc-copper-bright)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
-              {homeGoalScorers}
-            </span>
+      {/* Row 2: status — centered */}
+      <div />
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <span className="csfc-eyebrow" style={{ fontSize: '0.58rem', color: active ? 'var(--csfc-copper)' : 'var(--csfc-text-muted)' }}>
+          {kickoff ? `${kickoff} · ` : ''}{statusLabel}{htLabel ? ` · ${htLabel}` : ''}
+        </span>
+      </div>
+      <div />
+
+      {/* Row 3: goal scorers split to each side, with the ball between them */}
+      {hasScorers && (
+        <div style={{ gridColumn: '1 / -1', display: 'grid', gridTemplateColumns: '1fr auto 1fr', columnGap: '0.4rem', alignItems: 'start', marginTop: '0.15rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.1rem' }}>
+            {homeGoalScorers.map((s, i) => (
+              <span key={i} style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6rem', color: 'var(--csfc-text-muted)' }}>{s}</span>
+            ))}
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <span className="csfc-eyebrow" style={{ fontSize: '0.58rem', color: 'var(--csfc-copper)' }}>{statusLabel}</span>
-            {htLabel && <span className="csfc-eyebrow" style={{ fontSize: '0.55rem', color: 'var(--csfc-text-muted)' }}>{htLabel}</span>}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/assets/ball_cutout.png" alt="" aria-hidden="true" style={{ width: 11, height: 11, objectFit: 'contain', opacity: 0.85, marginTop: 1 }} />
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '0.1rem' }}>
+            {awayGoalScorers.map((s, i) => (
+              <span key={i} style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6rem', color: 'var(--csfc-text-muted)' }}>{s}</span>
+            ))}
           </div>
-          <div style={{ textAlign: 'left', minWidth: 0, overflow: 'hidden' }}>
-            <span className="csfc-eyebrow" style={{ fontSize: '0.6rem', color: 'var(--csfc-copper-bright)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block' }}>
-              {awayGoalScorers}
-            </span>
-          </div>
-        </>
-      ) : (
-        <>
-          <div />
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <span className="csfc-eyebrow" style={{ fontSize: '0.58rem', color: active ? 'var(--csfc-copper)' : 'var(--csfc-text-muted)' }}>
-              {kickoff ? `${kickoff} · ` : ''}{statusLabel}{htLabel ? ` · ${htLabel}` : ''}
-            </span>
-          </div>
-          <div />
-        </>
+        </div>
       )}
 
-      {/* Row 3: league meta — full-width centered */}
+      {/* Row 4: league meta — full-width centered */}
       <div style={{ gridColumn: '1 / -1', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem' }}>
         {league.flag && (
           // eslint-disable-next-line @next/next/no-img-element
@@ -259,6 +256,7 @@ export function MatchHub({ initialFixtures, initialDate }: MatchHubProps) {
 
   const fixtures = useFixtures(
     filter.date,
+    option.timeZone,
     isToday, // auto-refresh only for today
     isToday ? initialFixtures : undefined,
   );
@@ -266,7 +264,7 @@ export function MatchHub({ initialFixtures, initialDate }: MatchHubProps) {
   const data = useMemo(() => fixtures.data ?? [], [fixtures.data]);
 
   // Warm the cache for yesterday/tomorrow so the date strip feels instant
-  usePrefetchNeighbourDates(filter.date);
+  usePrefetchNeighbourDates(filter.date, option.timeZone);
 
   // Keep selection pointing at a real fixture
   useEffect(() => {
@@ -352,8 +350,8 @@ export function MatchHub({ initialFixtures, initialDate }: MatchHubProps) {
                 raw={raw}
                 active={isSelected}
                 onClick={() => setSelectedId(raw.fixture.id)}
-                homeGoalScorers={isSelected ? splitScorers.home : ''}
-                awayGoalScorers={isSelected ? splitScorers.away : ''}
+                homeGoalScorers={isSelected ? splitScorers.home : []}
+                awayGoalScorers={isSelected ? splitScorers.away : []}
                 formatDateTime={formatDateTime}
               />
             );
