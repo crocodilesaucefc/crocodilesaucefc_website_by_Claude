@@ -214,7 +214,6 @@ body { background: #04141a; color: var(--text-body); overflow-x: hidden; width: 
     transition: all 0.25s var(--ease-standard);
   }
   .nav-links.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
-  .nav-toggle { display: inline-flex; }
   .footer-grid { grid-template-columns: 1fr 1fr !important; }
 }
 @media (max-width: 640px) {

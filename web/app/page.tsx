@@ -14,6 +14,6 @@ export default async function Home() {
   const initialFixtures = await getFixtures({ date: todayIso }).catch(() => []);
 
   return (
-    <Landing hub={<MatchHub initialFixtures={initialFixtures} initialDate={todayIso} />} />
+    <Landing hub={<MatchHub initialFixtures={initialFixtures} initialDate={todayIso} />} fixtures={initialFixtures} />
   );
 }

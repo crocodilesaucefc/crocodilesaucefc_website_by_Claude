@@ -2,7 +2,9 @@
 
 import { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
 import Image from 'next/image';
-import { Badge, Button, GlassPanel, IconButton, NavLink, Tag, UniBevel } from '@/components/ds';
+import { Badge, Button, GlassPanel, NavLink, Tag, UniBevel } from '@/components/ds';
+import { LIVE_STATUSES } from '@/lib/queries';
+import type { RawFixture } from '@/lib/types';
 
 const A = '/assets/';
 
@@ -12,14 +14,6 @@ function Ext() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} width="100%" height="100%">
       <path d="M7 17L17 7M17 7H8M17 7v9" />
-    </svg>
-  );
-}
-
-function Menu() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} width="100%" height="100%">
-      <path d="M4 7h16M4 12h16M4 17h16" />
     </svg>
   );
 }
@@ -177,7 +171,6 @@ function SocialLinks() {
 function Header() {
   const links = ['Home', 'Match Hub', 'About', 'Viral Gallery', 'Store'];
   const [active, setActive] = useState('Home');
-  const [open, setOpen] = useState(false);
   const slug = (l: string) => '#' + l.toLowerCase().replace(/ /g, '-');
 
   return (
@@ -200,12 +193,12 @@ function Header() {
     >
       <a href="#home" onClick={() => setActive('Home')} style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', textDecoration: 'none' }}>
         <Image src={A + 'logo_medallion.png'} alt="CrocodileSauceFC crest" width={46} height={46} style={{ width: 46, height: 46, filter: 'drop-shadow(0 2px 6px rgb(0 0 0 / 0.6))' }} />
-        <Image src={A + 'wordmark.png'} alt="Crocodile Sauce F.C." width={922} height={128} style={{ height: 26, width: 'auto', filter: 'drop-shadow(0 2px 5px rgb(0 0 0 / 0.55))' }} />
+        <Image className="hide-sm" src={A + 'wordmark.png'} alt="Crocodile Sauce F.C." width={922} height={128} style={{ height: 26, width: 'auto', filter: 'drop-shadow(0 2px 5px rgb(0 0 0 / 0.55))' }} />
       </a>
 
-      <nav className={'nav-links' + (open ? ' open' : '')}>
+      <nav className="nav-links">
         {links.map((l) => (
-          <NavLink key={l} href={slug(l)} active={active === l} onClick={() => { setActive(l); setOpen(false); }}>
+          <NavLink key={l} href={slug(l)} active={active === l} onClick={() => setActive(l)}>
             {l}
           </NavLink>
         ))}
@@ -213,11 +206,6 @@ function Header() {
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.7rem' }}>
         <SocialLinks />
-        <span className="nav-toggle" style={{ width: 42, height: 42 }}>
-          <IconButton label="Menu" variant="tactical" active={open} onClick={() => setOpen((o) => !o)}>
-            <Menu />
-          </IconButton>
-        </span>
       </div>
     </header>
   );
@@ -295,12 +283,46 @@ function ExtArrow() {
   );
 }
 
-function LiveWire() {
-  const items = [
-    { tag: 'World Cup', time: '2m', text: 'Group A permutations: what the squad needs on Matchday 3', href: 'https://www.fifa.com/en/tournaments/mens/worldcup' },
-    { tag: 'Transfers', time: '18m', text: 'Low-Poly United table club-record bid for emerald winger', href: 'https://www.bbc.com/sport/football' },
-    { tag: 'Match Report', time: '1h', text: '“SCALE” passes late fitness test, starts at the back', href: 'https://www.theguardian.com/football' },
-  ];
+type WireItem = { tag: 'LIVE' | 'UPCOMING' | 'RESULT'; text: string };
+
+const FINISHED_STATUSES = new Set(['FT', 'AET', 'PEN']);
+
+/** "20:00" in the club's reference timezone, for upcoming-kickoff rows. */
+function formatKickoff(iso: string): string {
+  return new Intl.DateTimeFormat('en-GB', { timeZone: 'America/Vancouver', hour: '2-digit', minute: '2-digit' }).format(new Date(iso));
+}
+
+/** Turn today's fixtures into 3-4 Live Wire rows: live scores first, then next kickoffs, then recent results. */
+function buildWireItems(fixtures: RawFixture[]): WireItem[] {
+  const live: { date: string; item: WireItem }[] = [];
+  const upcoming: { date: string; item: WireItem }[] = [];
+  const result: { date: string; item: WireItem }[] = [];
+
+  for (const f of fixtures) {
+    const { home, away } = f.teams;
+    const { short, elapsed } = f.fixture.status;
+    const date = f.fixture.date;
+    const score = `${f.goals.home ?? 0}–${f.goals.away ?? 0}`;
+
+    if (LIVE_STATUSES.has(short)) {
+      const minute = elapsed != null ? ` ${elapsed}'` : '';
+      live.push({ date, item: { tag: 'LIVE', text: `${home.name} ${score} ${away.name}${minute}` } });
+    } else if (short === 'NS') {
+      upcoming.push({ date, item: { tag: 'UPCOMING', text: `${home.name} vs ${away.name} · ${formatKickoff(date)}` } });
+    } else if (FINISHED_STATUSES.has(short)) {
+      result.push({ date, item: { tag: 'RESULT', text: `${home.name} ${score} ${away.name} FT` } });
+    }
+  }
+
+  upcoming.sort((a, b) => a.date.localeCompare(b.date));
+  result.sort((a, b) => b.date.localeCompare(a.date));
+
+  return [...live, ...upcoming, ...result].slice(0, 4).map((entry) => entry.item);
+}
+
+function LiveWire({ fixtures }: { fixtures: RawFixture[] }) {
+  const items = buildWireItems(fixtures);
+  if (items.length === 0) return null;
 
   return (
     <div style={{ marginTop: '2.6rem', maxWidth: '40ch' }}>
@@ -317,9 +339,7 @@ function LiveWire() {
         {items.map((it, i) => (
           <a
             key={i}
-            href={it.href}
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#match-hub"
             className="wire-row"
             style={{
               display: 'grid',
@@ -335,10 +355,7 @@ function LiveWire() {
             <span className="wire-text" style={{ fontFamily: 'var(--font-sans)', fontSize: '0.84rem', lineHeight: 1.35, color: 'var(--csfc-text-primary)', transition: 'color 0.25s' }}>
               {it.text}
             </span>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', color: 'var(--csfc-text-muted)', whiteSpace: 'nowrap' }}>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.58rem' }}>{it.time}</span>
-              <ExtArrow />
-            </span>
+            <ExtArrow />
           </a>
         ))}
       </div>
@@ -348,7 +365,7 @@ function LiveWire() {
 
 /* ============================== HERO ============================== */
 
-function Hero() {
+function Hero({ fixtures }: { fixtures: RawFixture[] }) {
   return (
     <section id="home" className="anchor hero-sec" data-screen-label="Hero" style={{ position: 'relative', minHeight: '90vh', overflow: 'hidden', padding: '2.5rem 2.5rem 4rem', maxWidth: 1280, margin: '0 auto' }}>
       <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse at 72% 8%, rgb(52 211 153 / 0.09), transparent 55%), radial-gradient(ellipse at 26% 88%, rgb(180 83 9 / 0.12), transparent 52%)' }} />
@@ -395,7 +412,7 @@ function Hero() {
               </span>
             </div>
           </div>
-          <LiveWire />
+          <LiveWire fixtures={fixtures} />
         </div>
 
         <div className="hero-shield-col" style={{ position: 'relative', zIndex: 3, justifySelf: 'end', width: '100%', maxWidth: 580 }}>
@@ -417,18 +434,19 @@ function GlitchCroc() {
   const [glitching, setGlitching] = useState(false);
 
   useEffect(() => {
-    const id = setInterval(() => setIdx((i) => 1 - i), 5000);
-    return () => clearInterval(id);
-  }, []);
-
-  useEffect(() => {
-    const onTimer = setTimeout(() => setGlitching(true), 0);
-    const offTimer = setTimeout(() => setGlitching(false), 600);
+    let swapT: ReturnType<typeof setTimeout> | undefined;
+    let endT: ReturnType<typeof setTimeout> | undefined;
+    const cycle = setInterval(() => {
+      setGlitching(true);
+      swapT = setTimeout(() => setIdx((i) => 1 - i), 220);
+      endT = setTimeout(() => setGlitching(false), 620);
+    }, 5000);
     return () => {
-      clearTimeout(onTimer);
-      clearTimeout(offTimer);
+      clearInterval(cycle);
+      clearTimeout(swapT);
+      clearTimeout(endT);
     };
-  }, [idx]);
+  }, []);
 
   return (
     <div className="float-croc" style={{ width: '100%', maxWidth: 420, animation: 'floaty 7s ease-in-out infinite' }}>
@@ -723,7 +741,7 @@ function Footer() {
 
 /* ============================== LANDING ============================== */
 
-export function Landing({ hub }: { hub: ReactNode }) {
+export function Landing({ hub, fixtures }: { hub: ReactNode; fixtures: RawFixture[] }) {
   return (
     <>
       <div className="bg-photo" />
@@ -731,7 +749,7 @@ export function Landing({ hub }: { hub: ReactNode }) {
       <div className="vignette" />
       <div id="app">
         <Header />
-        <Hero />
+        <Hero fixtures={fixtures} />
         <div id="match-hub" className="anchor">{hub}</div>
         <About />
         <ViralGallery />
