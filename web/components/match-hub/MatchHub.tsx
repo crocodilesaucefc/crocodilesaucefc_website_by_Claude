@@ -4,13 +4,14 @@ import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 
 import { GlassPanel } from '@/components/ds';
 import { useLocale } from '@/lib/locale-context';
-import { LIVE_STATUSES, useFixtureEvents, useFixtures } from '@/lib/queries';
+import { LIVE_STATUSES, useFixtureEvents, useFixtures, usePrefetchNeighbourDates } from '@/lib/queries';
 import type { RawEvent, RawFixture, RawTeam } from '@/lib/types';
 import { GlobalControls, type FixturesFilterState } from './GlobalControls';
 import { MatchEvents } from './MatchEvents';
 import { MatchFormation } from './MatchFormation';
 import { MatchStats } from './MatchStats';
 import { MatchTactics } from './MatchTactics';
+import { FixtureListSkeleton } from './Skeleton';
 
 type HudTab = 'events' | 'lineups' | 'formation' | 'stats';
 
@@ -264,6 +265,9 @@ export function MatchHub({ initialFixtures, initialDate }: MatchHubProps) {
 
   const data = useMemo(() => fixtures.data ?? [], [fixtures.data]);
 
+  // Warm the cache for yesterday/tomorrow so the date strip feels instant
+  usePrefetchNeighbourDates(filter.date);
+
   // Keep selection pointing at a real fixture
   useEffect(() => {
     if (data.length === 0) { setSelectedId(null); return; }
@@ -328,9 +332,7 @@ export function MatchHub({ initialFixtures, initialDate }: MatchHubProps) {
               No fixtures available — date is outside the 7-day window (T±7).
             </p>
           )}
-          {!outsideHorizon && fixtures.isLoading && (
-            <p className="csfc-body" style={{ padding: '1rem' }}>Loading fixtures…</p>
-          )}
+          {!outsideHorizon && fixtures.isLoading && <FixtureListSkeleton />}
           {!outsideHorizon && fixtures.isError && (
             <p className="csfc-body" style={{ padding: '1rem' }}>
               Fixtures unavailable — the data feed may be temporarily rate-limited.{' '}

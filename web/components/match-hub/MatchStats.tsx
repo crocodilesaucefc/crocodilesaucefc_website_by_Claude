@@ -4,6 +4,7 @@ import type { CSSProperties } from 'react';
 
 import { useFixtureStatistics } from '@/lib/queries';
 import type { RawFixture, RawStatisticEntry, RawTeamStatistics } from '@/lib/types';
+import { HudSkeleton } from './Skeleton';
 
 type Props = { fixture: RawFixture | null; isLive?: boolean };
 
@@ -91,7 +92,7 @@ export function MatchStats({ fixture, isLive = false }: Props) {
   const statistics = useFixtureStatistics(fixtureId, isLive);
 
   if (!fixture) return <p className="csfc-body">Select a match above to see the statistics.</p>;
-  if (statistics.isLoading) return <p className="csfc-body">Loading statistics…</p>;
+  if (statistics.isLoading) return <HudSkeleton />;
   if (statistics.isError) return (
     <p className="csfc-body">
       Couldn&apos;t load statistics ({(statistics.error as Error)?.message ?? 'unknown error'}).

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { getFixtures } from '@/lib/api-football';
+import { getFixtures, serverTodayIso } from '@/lib/api-football';
 
 const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -27,7 +27,18 @@ export async function GET(request: Request) {
 
   try {
     const fixtures = await getFixtures({ date });
-    return NextResponse.json({ fixtures });
+    const res = NextResponse.json({ fixtures });
+
+    const today = serverTodayIso();
+    if (date < today) {
+      res.headers.set('Cache-Control', 'public, s-maxage=86400, stale-while-revalidate=604800');
+    } else if (date > today) {
+      res.headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400');
+    } else {
+      res.headers.set('Cache-Control', 'public, s-maxage=20, stale-while-revalidate=60');
+    }
+
+    return res;
   } catch (error) {
     console.error('[api/fixtures] fetch failed', error);
     return NextResponse.json({ error: 'Failed to load fixtures' }, { status: 502 });

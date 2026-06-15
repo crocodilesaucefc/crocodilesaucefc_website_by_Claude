@@ -4,6 +4,7 @@ import type { CSSProperties } from 'react';
 
 import { useFixtureLineups } from '@/lib/queries';
 import type { RawFixture, RawLineup, RawLineupPlayer } from '@/lib/types';
+import { HudSkeleton } from './Skeleton';
 
 type Props = { fixture: RawFixture | null; isLive?: boolean };
 
@@ -75,7 +76,7 @@ export function MatchTactics({ fixture, isLive = false }: Props) {
   const lineups = useFixtureLineups(fixtureId, isLive);
 
   if (!fixture) return <p className="csfc-body">Select a match above to see the line-ups.</p>;
-  if (lineups.isLoading) return <p className="csfc-body">Loading lineups…</p>;
+  if (lineups.isLoading) return <HudSkeleton />;
   if (lineups.isError) return (
     <p className="csfc-body">
       Couldn&apos;t load lineups ({(lineups.error as Error)?.message ?? 'unknown error'}).

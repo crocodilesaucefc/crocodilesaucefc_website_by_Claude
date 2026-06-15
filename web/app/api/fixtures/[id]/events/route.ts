@@ -12,7 +12,9 @@ export async function GET(_request: Request, ctx: RouteContext<'/api/fixtures/[i
 
   try {
     const events = await getFixtureEvents(id);
-    return NextResponse.json({ events });
+    const res = NextResponse.json({ events });
+    res.headers.set('Cache-Control', 'public, s-maxage=15, stale-while-revalidate=45');
+    return res;
   } catch (error) {
     console.error('[api/fixtures/[id]/events] fetch failed', error);
     return NextResponse.json({ error: 'Failed to load events' }, { status: 502 });

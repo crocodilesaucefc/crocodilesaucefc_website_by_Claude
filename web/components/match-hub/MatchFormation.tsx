@@ -4,6 +4,7 @@ import type { CSSProperties } from 'react';
 
 import { useFixtureLineups } from '@/lib/queries';
 import type { RawFixture, RawLineup, RawLineupPlayer } from '@/lib/types';
+import { HudSkeleton } from './Skeleton';
 
 type Props = { fixture: RawFixture | null; isLive?: boolean };
 
@@ -106,7 +107,7 @@ export function MatchFormation({ fixture, isLive = false }: Props) {
   const lineups = useFixtureLineups(fixtureId, isLive);
 
   if (!fixture) return <p className="csfc-body">Select a match above to view the formation.</p>;
-  if (lineups.isLoading) return <p className="csfc-body">Loading formation…</p>;
+  if (lineups.isLoading) return <HudSkeleton />;
   if (lineups.isError || !lineups.data?.length) {
     return <p className="csfc-body">Formation data not yet available — lineups are typically published closer to kick-off.</p>;
   }

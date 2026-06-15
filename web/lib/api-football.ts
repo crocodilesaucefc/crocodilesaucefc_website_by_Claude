@@ -14,7 +14,7 @@ const API_KEY = process.env.API_FOOTBALL_KEY;
 // ── Status derivation (date → FixtureStatus) ──────────────────────────────────
 
 /** Returns the ISO YYYY-MM-DD for today in UTC — used for horizon and cache keying. */
-function serverTodayIso(): string {
+export function serverTodayIso(): string {
   return new Intl.DateTimeFormat('en-CA', {
     timeZone: 'UTC',
     year: 'numeric',
@@ -30,6 +30,17 @@ export function deriveStatus(date: string): FixtureStatus {
   if (date > today) return 'upcoming';
   return 'live';
 }
+
+/** Tiered `next.revalidate` window for the fixtures fetch, based on date vs today. */
+function revalidateForDate(dateIso: string): number {
+  const today = serverTodayIso();
+  if (dateIso < today) return 86400; // past — finished results never change
+  if (dateIso > today) return 3600;  // upcoming — fixtures/kickoffs rarely change before match day
+  return 25;                          // today — live scores need freshness
+}
+
+/** Per-fixture detail fetches (events/lineups/statistics) are only polled while a match is live. */
+const DETAIL_REVALIDATE = 20;
 
 // ── 7-Day API horizon ─────────────────────────────────────────────────────────
 
@@ -105,13 +116,13 @@ function isConfigured(): boolean {
   return Boolean(API_KEY);
 }
 
-async function callApiFootball<T>(path: string, params: Record<string, string>): Promise<T[]> {
+async function callApiFootball<T>(path: string, params: Record<string, string>, revalidate: number): Promise<T[]> {
   const url = new URL(`${BASE_URL}${path}`);
   for (const [key, value] of Object.entries(params)) url.searchParams.set(key, value);
 
   const res = await fetch(url, {
     headers: authHeaders(),
-    next: { revalidate: 30 },
+    next: { revalidate },
   });
 
   if (!res.ok) {
@@ -131,7 +142,7 @@ async function callApiFootball<T>(path: string, params: Record<string, string>):
 // ── Fixtures fetch (always date-keyed) ────────────────────────────────────────
 
 async function fetchFixtures(date: string): Promise<RawFixture[]> {
-  return callApiFootball<RawFixture>('/fixtures', { date });
+  return callApiFootball<RawFixture>('/fixtures', { date }, revalidateForDate(date));
 }
 
 // ── Public API ─────────────────────────────────────────────────────────────────
@@ -190,7 +201,7 @@ export async function getFixtureEvents(fixtureId: string): Promise<RawEvent[]> {
     return getMockEvents(fixtureId);
   }
   try {
-    return await callApiFootball<RawEvent>('/fixtures/events', { fixture: fixtureId });
+    return await callApiFootball<RawEvent>('/fixtures/events', { fixture: fixtureId }, DETAIL_REVALIDATE);
   } catch (err) {
     console.warn(`[api-football] events unavailable for ${fixtureId} — ${(err as Error).message}`);
     return [];
@@ -202,7 +213,7 @@ export async function getFixtureLineups(fixtureId: string): Promise<RawLineup[]>
     return getMockLineups(fixtureId);
   }
   try {
-    return await callApiFootball<RawLineup>('/fixtures/lineups', { fixture: fixtureId });
+    return await callApiFootball<RawLineup>('/fixtures/lineups', { fixture: fixtureId }, DETAIL_REVALIDATE);
   } catch (err) {
     console.warn(`[api-football] lineups unavailable for ${fixtureId} — ${(err as Error).message}`);
     return [];
@@ -214,7 +225,7 @@ export async function getFixtureStatistics(fixtureId: string): Promise<RawTeamSt
     return getMockStatistics(fixtureId);
   }
   try {
-    return await callApiFootball<RawTeamStatistics>('/fixtures/statistics', { fixture: fixtureId });
+    return await callApiFootball<RawTeamStatistics>('/fixtures/statistics', { fixture: fixtureId }, DETAIL_REVALIDATE);
   } catch (err) {
     console.warn(`[api-football] statistics unavailable for ${fixtureId} — ${(err as Error).message}`);
     return [];
