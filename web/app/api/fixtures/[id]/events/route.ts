@@ -7,13 +7,19 @@ import { getFixtureEvents } from '@/lib/api-football';
  *
  * GET /api/fixtures/:id/events
  */
-export async function GET(_request: Request, ctx: RouteContext<'/api/fixtures/[id]/events'>) {
+export async function GET(request: Request, ctx: RouteContext<'/api/fixtures/[id]/events'>) {
   const { id } = await ctx.params;
+  const isLive = new URL(request.url).searchParams.get('live') === '1';
 
   try {
-    const events = await getFixtureEvents(id);
+    const events = await getFixtureEvents(id, isLive);
     const res = NextResponse.json({ events });
-    res.headers.set('Cache-Control', 'public, s-maxage=15, stale-while-revalidate=45');
+    res.headers.set(
+      'Cache-Control',
+      isLive
+        ? 'public, s-maxage=15, stale-while-revalidate=45'
+        : 'public, s-maxage=86400, stale-while-revalidate=604800',
+    );
     return res;
   } catch (error) {
     console.error('[api/fixtures/[id]/events] fetch failed', error);

@@ -14,19 +14,25 @@ type PosGroup = { label: string; players: RawLineupPlayer[] };
 
 const POS_LABELS: Record<string, string> = { G: 'GK', D: 'DEF', M: 'MID', F: 'FWD' };
 
-/** Group startXI by position using the API's `pos` field, or fall back to 4-3-3 by index. */
-function buildRows(lineup: RawLineup, attackFirst: boolean): PosGroup[] {
+/**
+ * Group startXI into rows for top-down rendering. `player.grid` is `"row:col"`
+ * with row 1 = goalkeeper and row number increasing toward attack — both
+ * teams render rows in this same ascending order (GK at top, no flip).
+ */
+function buildRows(lineup: RawLineup): PosGroup[] {
   const xi = lineup.startXI ?? [];
 
-  // If the API provides grid coords, respect column ordering (col 1 = GK, highest = attack).
+  // If the API provides grid coords, group by row and sort within each row by column.
   if (xi.some((p) => p.player.grid)) {
-    const byCol = new Map<number, RawLineupPlayer[]>();
+    const byRow = new Map<number, RawLineupPlayer[]>();
     for (const p of xi) {
-      const col = p.player.grid ? parseInt(p.player.grid.split(':')[0], 10) : 1;
-      if (!byCol.has(col)) byCol.set(col, []);
-      byCol.get(col)!.push(p);
+      const row = p.player.grid ? parseInt(p.player.grid.split(':')[0], 10) : 1;
+      if (!byRow.has(row)) byRow.set(row, []);
+      byRow.get(row)!.push(p);
     }
-    const sorted = [...byCol.entries()].sort((a, b) => attackFirst ? b[0] - a[0] : a[0] - b[0]);
+    const colOf = (p: RawLineupPlayer) => (p.player.grid ? parseInt(p.player.grid.split(':')[1], 10) : 0);
+    const sorted = [...byRow.entries()].sort((a, b) => a[0] - b[0]);
+    for (const [, players] of sorted) players.sort((a, b) => colOf(a) - colOf(b));
     return sorted.map(([, players], i) => ({ label: `Line ${i + 1}`, players }));
   }
 
@@ -37,16 +43,19 @@ function buildRows(lineup: RawLineup, attackFirst: boolean): PosGroup[] {
       const pos = p.player.pos ?? 'F';
       (groups[pos] ??= []).push(p);
     }
-    const order: string[] = attackFirst ? ['F', 'M', 'D', 'G'] : ['G', 'D', 'M', 'F'];
+    const order: string[] = ['G', 'D', 'M', 'F'];
     return order
       .filter((pos) => groups[pos]?.length)
       .map((pos) => ({ label: POS_LABELS[pos] ?? pos, players: groups[pos] }));
   }
 
   // Last resort: force a 4-3-3 split by index.
-  const slices = attackFirst
-    ? [['FWD', xi.slice(8, 11)], ['MID', xi.slice(5, 8)], ['DEF', xi.slice(1, 5)], ['GK', xi.slice(0, 1)]] as const
-    : [['GK', xi.slice(0, 1)], ['DEF', xi.slice(1, 5)], ['MID', xi.slice(5, 8)], ['FWD', xi.slice(8, 11)]] as const;
+  const slices = [
+    ['GK', xi.slice(0, 1)],
+    ['DEF', xi.slice(1, 5)],
+    ['MID', xi.slice(5, 8)],
+    ['FWD', xi.slice(8, 11)],
+  ] as const;
   return slices.map(([label, players]) => ({ label: label as string, players: [...players] }));
 }
 
@@ -67,8 +76,8 @@ function PlayerChip({ p }: { p: RawLineupPlayer }) {
 
 // ── Team half ─────────────────────────────────────────────────────────────────
 
-function TeamHalf({ lineup, teamName, attackFirst }: { lineup: RawLineup; teamName: string; attackFirst: boolean }) {
-  const rows = buildRows(lineup, attackFirst);
+function TeamHalf({ lineup, teamName }: { lineup: RawLineup; teamName: string }) {
+  const rows = buildRows(lineup);
   return (
     <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -79,6 +88,11 @@ function TeamHalf({ lineup, teamName, attackFirst }: { lineup: RawLineup; teamNa
           {lineup.formation ?? '–'}
         </span>
       </div>
+      {lineup.coach?.name && (
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6rem', color: 'var(--csfc-text-muted)', letterSpacing: '0.04em' }}>
+          Manager: {lineup.coach.name}
+        </span>
+      )}
       {rows.map((row) => (
         row.players.length === 0 ? null : (
           <div key={row.label} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.4rem', flexWrap: 'wrap' }}>
@@ -116,14 +130,12 @@ export function MatchFormation({ fixture, isLive = false }: Props) {
 
   return (
     /*
-     * Side-by-side pitch layout — home team on the left half attacking
-     * toward center (GK at top, FWD at bottom), away team on the right half
-     * attacking toward center (FWD at top, GK at bottom). A vertical 1px
-     * divider represents the centre line. attackFirst props are already
-     * correct for this orientation.
+     * Side-by-side pitch layout — both teams render rows top-to-bottom
+     * identically (GK -> DEF -> MID -> FWD), like the BBC. A vertical 1px
+     * divider represents the centre line.
      */
     <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 1px minmax(0,1fr)', gap: '0 1.2rem', alignItems: 'start' }}>
-      {home && <TeamHalf lineup={home} teamName={fixture.teams.home.name} attackFirst={false} />}
+      {home && <TeamHalf lineup={home} teamName={fixture.teams.home.name} />}
 
       {/* Vertical centre line */}
       <div style={{ width: 1, alignSelf: 'stretch', background: 'var(--csfc-copper-30)', position: 'relative' }}>
@@ -138,7 +150,7 @@ export function MatchFormation({ fixture, isLive = false }: Props) {
         </span>
       </div>
 
-      {away && <TeamHalf lineup={away} teamName={fixture.teams.away.name} attackFirst={true} />}
+      {away && <TeamHalf lineup={away} teamName={fixture.teams.away.name} />}
     </div>
   );
 }

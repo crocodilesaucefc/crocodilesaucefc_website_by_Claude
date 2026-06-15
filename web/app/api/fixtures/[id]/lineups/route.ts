@@ -7,13 +7,19 @@ import { getFixtureLineups } from '@/lib/api-football';
  *
  * GET /api/fixtures/:id/lineups
  */
-export async function GET(_request: Request, ctx: RouteContext<'/api/fixtures/[id]/lineups'>) {
+export async function GET(request: Request, ctx: RouteContext<'/api/fixtures/[id]/lineups'>) {
   const { id } = await ctx.params;
+  const isLive = new URL(request.url).searchParams.get('live') === '1';
 
   try {
-    const lineups = await getFixtureLineups(id);
+    const lineups = await getFixtureLineups(id, isLive);
     const res = NextResponse.json({ lineups });
-    res.headers.set('Cache-Control', 'public, s-maxage=15, stale-while-revalidate=45');
+    res.headers.set(
+      'Cache-Control',
+      isLive
+        ? 'public, s-maxage=15, stale-while-revalidate=45'
+        : 'public, s-maxage=86400, stale-while-revalidate=604800',
+    );
     return res;
   } catch (error) {
     console.error('[api/fixtures/[id]/lineups] fetch failed', error);

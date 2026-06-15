@@ -4,7 +4,14 @@ import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 
 import { GlassPanel } from '@/components/ds';
 import { useLocale } from '@/lib/locale-context';
-import { LIVE_STATUSES, useFixtureEvents, useFixtures, usePrefetchNeighbourDates } from '@/lib/queries';
+import {
+  FINISHED_STATUSES,
+  LIVE_STATUSES,
+  useFixtureEvents,
+  useFixtures,
+  useFixturesEvents,
+  usePrefetchNeighbourDates,
+} from '@/lib/queries';
 import type { RawEvent, RawFixture, RawTeam } from '@/lib/types';
 import { GlobalControls, type FixturesFilterState } from './GlobalControls';
 import { MatchEvents } from './MatchEvents';
@@ -58,10 +65,30 @@ function isOutsideHorizon(date: string, todayIso: string): boolean {
 
 // ── Goal scorer helpers ────────────────────────────────────────────────────────
 
-function fmtScorer(e: RawEvent): string {
-  const last = (e.player.name ?? '').split(' ').at(-1) ?? '';
-  const extra = e.time.extra ? `+${e.time.extra}` : '';
-  return `${last} ${e.time.elapsed}${extra}'`;
+function scorerMinute(e: RawEvent): string {
+  return e.time.extra ? `${e.time.elapsed}'+${e.time.extra}` : `${e.time.elapsed}'`;
+}
+
+/** One line per scorer on this side, e.g. "Havertz 45'+5, 88'" — multiple goals combined. */
+function buildScorerLines(events: RawEvent[], teamId: number): string[] {
+  const goals = events.filter(
+    (e) => e.type === 'Goal' && e.detail !== 'Missed Penalty' && e.team.id === teamId,
+  );
+  const order: Array<number | string> = [];
+  const byPlayer = new Map<number | string, { name: string; minutes: string[]; og: boolean }>();
+  for (const e of goals) {
+    const name = (e.player.name ?? '').split(' ').at(-1) ?? '';
+    const key = e.player.id ?? name;
+    if (!byPlayer.has(key)) {
+      byPlayer.set(key, { name, minutes: [], og: e.detail === 'Own Goal' });
+      order.push(key);
+    }
+    byPlayer.get(key)!.minutes.push(scorerMinute(e));
+  }
+  return order.map((key) => {
+    const { name, minutes, og } = byPlayer.get(key)!;
+    return `${name} ${minutes.join(', ')}${og ? ' (OG)' : ''}`;
+  });
 }
 
 function buildSplitGoalScorers(
@@ -69,10 +96,9 @@ function buildSplitGoalScorers(
   homeTeamId: number,
   awayTeamId: number,
 ): { home: string[]; away: string[] } {
-  const goals = events.filter((e) => e.type === 'Goal');
   return {
-    home: goals.filter((e) => e.team.id === homeTeamId).map(fmtScorer),
-    away: goals.filter((e) => e.team.id === awayTeamId).map(fmtScorer),
+    home: buildScorerLines(events, homeTeamId),
+    away: buildScorerLines(events, awayTeamId),
   };
 }
 
@@ -290,6 +316,23 @@ export function MatchHub({ initialFixtures, initialDate }: MatchHubProps) {
     [selectedEvents.data, selected],
   );
 
+  // Bulk-load events for every finished fixture so each row can show its own
+  // scorers (cached ~1 day per fixture — see useFixturesEvents).
+  const finishedFixtureIds = useMemo(
+    () => data.filter((r) => FINISHED_STATUSES.has(r.fixture.status.short)).map((r) => String(r.fixture.id)),
+    [data],
+  );
+  const finishedEvents = useFixturesEvents(finishedFixtureIds);
+  const finishedScorers = useMemo(() => {
+    const map = new Map<number, { home: string[]; away: string[] }>();
+    for (const raw of data) {
+      if (!FINISHED_STATUSES.has(raw.fixture.status.short)) continue;
+      const events = finishedEvents.get(String(raw.fixture.id)) ?? [];
+      map.set(raw.fixture.id, buildSplitGoalScorers(events, raw.teams.home.id, raw.teams.away.id));
+    }
+    return map;
+  }, [data, finishedEvents]);
+
   return (
     <section id="world-cup-hub" className="section anchor" data-screen-label="Match Hub" style={{ maxWidth: '64rem', margin: '0 auto' }}>
 
@@ -344,14 +387,20 @@ export function MatchHub({ initialFixtures, initialDate }: MatchHubProps) {
           )}
           {data.map((raw) => {
             const isSelected = raw.fixture.id === selectedId;
+            const isFinished = FINISHED_STATUSES.has(raw.fixture.status.short);
+            const scorers = isFinished
+              ? finishedScorers.get(raw.fixture.id) ?? { home: [], away: [] }
+              : isSelected
+                ? splitScorers
+                : { home: [], away: [] };
             return (
               <FixtureRow
                 key={raw.fixture.id}
                 raw={raw}
                 active={isSelected}
                 onClick={() => setSelectedId(raw.fixture.id)}
-                homeGoalScorers={isSelected ? splitScorers.home : []}
-                awayGoalScorers={isSelected ? splitScorers.away : []}
+                homeGoalScorers={scorers.home}
+                awayGoalScorers={scorers.away}
                 formatDateTime={formatDateTime}
               />
             );

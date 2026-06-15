@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useQueries, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import type { RawEvent, RawFixture, RawLineup, RawTeamStatistics } from './types';
 
@@ -73,6 +73,18 @@ export function usePrefetchNeighbourDates(activeDate: string, timezone: string) 
 /** Statuses that indicate a match is currently in progress. */
 export const LIVE_STATUSES = new Set(['1H', '2H', 'ET', 'BT', 'P', 'INT']);
 
+/** Statuses that indicate a match has finished — its details are cacheable ~immutably. */
+export const FINISHED_STATUSES = new Set(['FT', 'AET', 'PEN']);
+
+/**
+ * Per-fixture detail endpoints cache aggressively once a match is finished
+ * (events/lineups/stats never change again) but stay near-real-time while
+ * live. `isLive` selects which cache tier the route serves.
+ */
+function detailUrl(base: string, isLive: boolean): string {
+  return `${base}?live=${isLive ? 1 : 0}`;
+}
+
 /**
  * The remaining hooks back the quad-pane HUD. Each is keyed on the currently-
  * selected fixture id and stays disabled until one is chosen.
@@ -84,7 +96,9 @@ export function useFixtureEvents(fixtureId: string | null, isLive = false) {
   return useQuery({
     queryKey: ['fixture-events', fixtureId],
     queryFn: () =>
-      fetchJson<{ events: RawEvent[] }>(`/api/fixtures/${fixtureId}/events`).then((r) => r.events),
+      fetchJson<{ events: RawEvent[] }>(detailUrl(`/api/fixtures/${fixtureId}/events`, isLive)).then(
+        (r) => r.events,
+      ),
     enabled: fixtureId !== null,
     placeholderData: keepPreviousData,
     staleTime: STALE_MS,
@@ -96,7 +110,7 @@ export function useFixtureLineups(fixtureId: string | null, isLive = false) {
   return useQuery({
     queryKey: ['fixture-lineups', fixtureId],
     queryFn: () =>
-      fetchJson<{ lineups: RawLineup[] }>(`/api/fixtures/${fixtureId}/lineups`).then(
+      fetchJson<{ lineups: RawLineup[] }>(detailUrl(`/api/fixtures/${fixtureId}/lineups`, isLive)).then(
         (r) => r.lineups,
       ),
     enabled: fixtureId !== null,
@@ -111,11 +125,33 @@ export function useFixtureStatistics(fixtureId: string | null, isLive = false) {
     queryKey: ['fixture-statistics', fixtureId],
     queryFn: () =>
       fetchJson<{ statistics: RawTeamStatistics[] }>(
-        `/api/fixtures/${fixtureId}/statistics`,
+        detailUrl(`/api/fixtures/${fixtureId}/statistics`, isLive),
       ).then((r) => r.statistics),
     enabled: fixtureId !== null,
     placeholderData: keepPreviousData,
     staleTime: STALE_MS,
     refetchInterval: isLive ? LIVE_DETAIL_REFETCH_MS : false,
+  });
+}
+
+/**
+ * Bulk-loads events for several finished fixtures (e.g. the scorer rows in
+ * the fixtures list). Shares the `['fixture-events', id]` cache key with
+ * `useFixtureEvents`, so a fixture's events are fetched once (cached ~1 day)
+ * and reused whether it's the selected match or just listed.
+ */
+export function useFixturesEvents(fixtureIds: string[]): Map<string, RawEvent[]> {
+  return useQueries({
+    queries: fixtureIds.map((id) => ({
+      queryKey: ['fixture-events', id],
+      queryFn: () =>
+        fetchJson<{ events: RawEvent[] }>(detailUrl(`/api/fixtures/${id}/events`, false)).then((r) => r.events),
+      staleTime: STALE_MS,
+    })),
+    combine: (results) => {
+      const map = new Map<string, RawEvent[]>();
+      results.forEach((r, i) => map.set(fixtureIds[i], r.data ?? []));
+      return map;
+    },
   });
 }

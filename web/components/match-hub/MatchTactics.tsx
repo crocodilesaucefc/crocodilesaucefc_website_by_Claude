@@ -4,11 +4,13 @@ import type { CSSProperties } from 'react';
 
 import { useFixtureEvents, useFixtureLineups } from '@/lib/queries';
 import type { RawEvent, RawFixture, RawLineup, RawLineupPlayer } from '@/lib/types';
+import { EventIcon } from './EventIcon';
 import { HudSkeleton } from './Skeleton';
 
 type Props = { fixture: RawFixture | null; isLive?: boolean };
 
 type SubInfo = { who: string; min: string };
+type CardInfo = { type: 'yellow' | 'red'; min: string };
 
 // ── Substitution helpers ──────────────────────────────────────────────────────
 
@@ -31,30 +33,89 @@ function buildSubMap(events: RawEvent[], teamId: number): Map<string, SubInfo> {
   return map;
 }
 
+/** Map "player who came on" (by id) → who they replaced + when, for one team. */
+function buildCameOnMap(events: RawEvent[], teamId: number): Map<number, SubInfo> {
+  const map = new Map<number, SubInfo>();
+  for (const e of events) {
+    if (e.type !== 'subst' || e.team.id !== teamId) continue;
+    const playerInId = e.player.id;
+    const playerOut = e.assist?.name;
+    if (playerInId == null || !playerOut) continue;
+    map.set(playerInId, { who: playerOut, min: minuteLabel(e) });
+  }
+  return map;
+}
+
+/** Map player id → cards received (a player can have two — yellow then red). */
+function buildCardMap(events: RawEvent[], teamId: number): Map<number, CardInfo[]> {
+  const map = new Map<number, CardInfo[]>();
+  for (const e of events) {
+    if (e.type !== 'Card' || e.team.id !== teamId) continue;
+    const id = e.player.id;
+    if (id == null) continue;
+    const type: CardInfo['type'] = (e.detail ?? '').toLowerCase().includes('red') ? 'red' : 'yellow';
+    const list = map.get(id) ?? [];
+    list.push({ type, min: minuteLabel(e) });
+    map.set(id, list);
+  }
+  return map;
+}
+
 // ── Player row ─────────────────────────────────────────────────────────────────
 
-function PlayerRow({ player, sub }: { player: RawLineupPlayer; sub?: SubInfo }) {
+/** Green swap-arrow + "{who} {minute}" — used for both subbed-off starters and subs who came on. */
+function SwapMarker({ info }: { info: SubInfo }) {
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+      <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 8h13M17 8l-3.5-3.5M17 8l-3.5 3.5" fill="none" stroke="#34d399" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M20 16H7M7 16l3.5-3.5M7 16l3.5 3.5" fill="none" stroke="#34d399" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6rem', color: 'var(--csfc-text-muted)', whiteSpace: 'nowrap' }}>
+        {info.who} {info.min}
+      </span>
+    </span>
+  );
+}
+
+function PlayerRow({
+  player,
+  sub,
+  comeOn,
+  cards,
+  isCaptain,
+}: {
+  player: RawLineupPlayer;
+  sub?: SubInfo;
+  comeOn?: SubInfo;
+  cards?: CardInfo[];
+  isCaptain?: boolean;
+}) {
   const { number, name } = player.player;
   const displayName = name
     ? name.split(' ').length > 1
       ? `${name.split(' ').slice(0, -1).map((p) => `${p[0]}.`).join(' ')} ${name.split(' ').at(-1)}`
       : name
     : '—';
+  const swap = sub ?? comeOn;
+  const hasMarkers = (cards && cards.length > 0) || swap;
   return (
     <div style={playerRowStyle}>
       <span style={numberCircleStyle}>{number ?? '?'}</span>
       <span className="csfc-data" style={{ fontSize: '0.72rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-        {displayName}
+        {displayName}{isCaptain ? ' (c)' : ''}
       </span>
-      {sub && (
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', marginLeft: 'auto', flexShrink: 0 }}>
-          <svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M4 8h13M17 8l-3.5-3.5M17 8l-3.5 3.5" fill="none" stroke="#34d399" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-            <path d="M20 16H7M7 16l3.5-3.5M7 16l3.5 3.5" fill="none" stroke="#34d399" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6rem', color: 'var(--csfc-text-muted)', whiteSpace: 'nowrap' }}>
-            {sub.who} {sub.min}
-          </span>
+      {hasMarkers && (
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', marginLeft: 'auto', flexShrink: 0 }}>
+          {cards?.map((c, i) => (
+            <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.1rem' }}>
+              <EventIcon type={c.type} />
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.6rem', color: 'var(--csfc-text-muted)', whiteSpace: 'nowrap' }}>
+                {c.min}
+              </span>
+            </span>
+          ))}
+          {swap && <SwapMarker info={swap} />}
         </span>
       )}
     </div>
@@ -63,7 +124,17 @@ function PlayerRow({ player, sub }: { player: RawLineupPlayer; sub?: SubInfo }) 
 
 // ── Team column ────────────────────────────────────────────────────────────────
 
-function TeamColumn({ lineup, subMap }: { lineup: RawLineup; subMap: Map<string, SubInfo> }) {
+function TeamColumn({
+  lineup,
+  subMap,
+  cameOnMap,
+  cardMap,
+}: {
+  lineup: RawLineup;
+  subMap: Map<string, SubInfo>;
+  cameOnMap: Map<number, SubInfo>;
+  cardMap: Map<number, CardInfo[]>;
+}) {
   const starters = lineup.startXI ?? [];
   const subs = lineup.substitutes ?? [];
 
@@ -83,7 +154,13 @@ function TeamColumn({ lineup, subMap }: { lineup: RawLineup; subMap: Map<string,
 
       {/* Starting XI */}
       {starters.map((p, i) => (
-        <PlayerRow key={p.player.id ?? `xi-${i}`} player={p} sub={p.player.name ? subMap.get(p.player.name) : undefined} />
+        <PlayerRow
+          key={p.player.id ?? `xi-${i}`}
+          player={p}
+          sub={p.player.name ? subMap.get(p.player.name) : undefined}
+          cards={p.player.id != null ? cardMap.get(p.player.id) : undefined}
+          isCaptain={p.player.captain === true}
+        />
       ))}
 
       {/* Substitutes */}
@@ -95,7 +172,13 @@ function TeamColumn({ lineup, subMap }: { lineup: RawLineup; subMap: Map<string,
             </span>
           </div>
           {subs.map((p, i) => (
-            <PlayerRow key={p.player.id ?? `sub-${i}`} player={p} />
+            <PlayerRow
+              key={p.player.id ?? `sub-${i}`}
+              player={p}
+              comeOn={p.player.id != null ? cameOnMap.get(p.player.id) : undefined}
+              cards={p.player.id != null ? cardMap.get(p.player.id) : undefined}
+              isCaptain={p.player.captain === true}
+            />
           ))}
         </>
       )}
@@ -127,10 +210,24 @@ export function MatchTactics({ fixture, isLive = false }: Props) {
   return (
     /* BBC-style 2-column mirror layout — home left, away right, shared divider */
     <div className="hud-lineups" style={{ display: 'grid', gridTemplateColumns: '1fr 1px 1fr', gap: '0 1.2rem', alignItems: 'start' }}>
-      {home && <TeamColumn lineup={home} subMap={buildSubMap(eventList, home.team.id)} />}
+      {home && (
+        <TeamColumn
+          lineup={home}
+          subMap={buildSubMap(eventList, home.team.id)}
+          cameOnMap={buildCameOnMap(eventList, home.team.id)}
+          cardMap={buildCardMap(eventList, home.team.id)}
+        />
+      )}
       {/* Centre divider */}
       <div style={{ width: 1, background: 'var(--csfc-copper-30)', alignSelf: 'stretch' }} />
-      {away && <TeamColumn lineup={away} subMap={buildSubMap(eventList, away.team.id)} />}
+      {away && (
+        <TeamColumn
+          lineup={away}
+          subMap={buildSubMap(eventList, away.team.id)}
+          cameOnMap={buildCameOnMap(eventList, away.team.id)}
+          cardMap={buildCardMap(eventList, away.team.id)}
+        />
+      )}
     </div>
   );
 }

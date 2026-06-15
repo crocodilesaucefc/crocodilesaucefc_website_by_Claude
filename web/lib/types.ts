@@ -65,6 +65,8 @@ export type RawLineupPlayer = {
     number?: number | null;
     pos?: string | null;
     grid?: string | null;
+    /** Some feeds mark the captain here — render `(c)` only when explicitly true. */
+    captain?: boolean | null;
   };
 };
 

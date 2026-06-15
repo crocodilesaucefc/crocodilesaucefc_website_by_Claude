@@ -39,8 +39,13 @@ function revalidateForDate(dateIso: string, timeZone: string): number {
   return 25;                          // today — live scores need freshness
 }
 
-/** Per-fixture detail fetches (events/lineups/statistics) are only polled while a match is live. */
-const DETAIL_REVALIDATE = 20;
+/**
+ * Per-fixture detail fetches (events/lineups/statistics): a live match polls
+ * frequently, but a finished match's events/lineups/stats never change again —
+ * cache those ~immutably to protect the API quota.
+ */
+const LIVE_DETAIL_REVALIDATE = 15;
+const FINISHED_DETAIL_REVALIDATE = 86400;
 
 // ── 7-Day API horizon ─────────────────────────────────────────────────────────
 
@@ -198,37 +203,40 @@ export async function getFixtures(query: FixturesQuery): Promise<RawFixture[]> {
 
 // ── Per-fixture detail fetchers ────────────────────────────────────────────────
 
-export async function getFixtureEvents(fixtureId: string): Promise<RawEvent[]> {
+export async function getFixtureEvents(fixtureId: string, live = false): Promise<RawEvent[]> {
   // Only serve mock data for mock fixture IDs (dev / quota-exhausted fixture list fallback)
   if (!isConfigured() || fixtureId.startsWith('mock-') || fixtureId.startsWith('900')) {
     return getMockEvents(fixtureId);
   }
   try {
-    return await callApiFootball<RawEvent>('/fixtures/events', { fixture: fixtureId }, DETAIL_REVALIDATE);
+    const revalidate = live ? LIVE_DETAIL_REVALIDATE : FINISHED_DETAIL_REVALIDATE;
+    return await callApiFootball<RawEvent>('/fixtures/events', { fixture: fixtureId }, revalidate);
   } catch (err) {
     console.warn(`[api-football] events unavailable for ${fixtureId} — ${(err as Error).message}`);
     return [];
   }
 }
 
-export async function getFixtureLineups(fixtureId: string): Promise<RawLineup[]> {
+export async function getFixtureLineups(fixtureId: string, live = false): Promise<RawLineup[]> {
   if (!isConfigured() || fixtureId.startsWith('mock-') || fixtureId.startsWith('900')) {
     return getMockLineups(fixtureId);
   }
   try {
-    return await callApiFootball<RawLineup>('/fixtures/lineups', { fixture: fixtureId }, DETAIL_REVALIDATE);
+    const revalidate = live ? LIVE_DETAIL_REVALIDATE : FINISHED_DETAIL_REVALIDATE;
+    return await callApiFootball<RawLineup>('/fixtures/lineups', { fixture: fixtureId }, revalidate);
   } catch (err) {
     console.warn(`[api-football] lineups unavailable for ${fixtureId} — ${(err as Error).message}`);
     return [];
   }
 }
 
-export async function getFixtureStatistics(fixtureId: string): Promise<RawTeamStatistics[]> {
+export async function getFixtureStatistics(fixtureId: string, live = false): Promise<RawTeamStatistics[]> {
   if (!isConfigured() || fixtureId.startsWith('mock-') || fixtureId.startsWith('900')) {
     return getMockStatistics(fixtureId);
   }
   try {
-    return await callApiFootball<RawTeamStatistics>('/fixtures/statistics', { fixture: fixtureId }, DETAIL_REVALIDATE);
+    const revalidate = live ? LIVE_DETAIL_REVALIDATE : FINISHED_DETAIL_REVALIDATE;
+    return await callApiFootball<RawTeamStatistics>('/fixtures/statistics', { fixture: fixtureId }, revalidate);
   } catch (err) {
     console.warn(`[api-football] statistics unavailable for ${fixtureId} — ${(err as Error).message}`);
     return [];
