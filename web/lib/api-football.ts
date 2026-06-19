@@ -66,10 +66,26 @@ const historicalCache = new Map<string, RawFixture[]>();
 
 // ── Content filter ─────────────────────────────────────────────────────────────
 
+// Men's national-team competitions (stable API-Football league IDs).
+// Replaces the country === 'world' catch-all which also matched club competitions
+// (Friendlies Clubs, UCL, Club World Cup) filed under country "World".
+const INTL_LEAGUE_IDS = new Set<number>([
+  1,   // FIFA World Cup
+  10,  // Friendlies (international, nation vs nation)
+  5,   // UEFA Nations League
+  4,   // Euro Championship
+  960, // Euro Championship - Qualification
+  9,   // Copa America
+  6,   // Africa Cup of Nations
+  7,   // Asian Cup
+  22,  // CONCACAF Gold Cup
+  21,  // FIFA Confederations Cup
+  29, 30, 31, 32, 33, 34, // WC Qualifiers by confederation
+  37,  // WC Qualification Intercontinental Play-offs
+]);
+
 function isInternational(f: RawFixture): boolean {
-  const country = (f.league.country ?? '').toLowerCase();
-  const name = (f.league.name ?? '').toLowerCase();
-  return country === 'world' || name.includes('international') || name.includes('friendly');
+  return f.league.id != null && INTL_LEAGUE_IDS.has(f.league.id);
 }
 
 // Strictly exclude women's competitions — checked before the international pass.
@@ -98,16 +114,34 @@ function isYouthFixture(f: RawFixture): boolean {
   );
 }
 
-const EPL_LEAGUE_ID = 39; // API-Football: Premier League (England)
+const EPL_LEAGUE_ID = 39; // Premier League (England) — fixed in API-Football
+let eplTeamIdsCache: { ids: Set<number>; fetchedAt: number } | null = null;
+const EPL_TTL_MS = 24 * 60 * 60 * 1000; // refresh daily
 
-function isEplFixture(f: RawFixture): boolean {
-  return f.league.id === EPL_LEAGUE_ID && (f.league.country ?? '').toLowerCase() === 'england';
+async function getEplTeamIds(): Promise<Set<number>> {
+  if (eplTeamIdsCache && Date.now() - eplTeamIdsCache.fetchedAt < EPL_TTL_MS) {
+    return eplTeamIdsCache.ids;
+  }
+  // find the current PL season procedurally, then fetch the 20 clubs
+  const leagueRes = await apiGet('/leagues', { id: String(EPL_LEAGUE_ID), current: 'true' });
+  const season: number =
+    (leagueRes.response as any[])?.[0]?.seasons?.find((s: any) => s.current)?.year ??
+    new Date().getUTCFullYear();
+  const teamsRes = await apiGet('/teams', { league: String(EPL_LEAGUE_ID), season: String(season) });
+  const ids = new Set<number>((teamsRes.response as any[]).map((t: any) => Number(t.team.id)));
+  if (ids.size > 0) eplTeamIdsCache = { ids, fetchedAt: Date.now() };
+  return eplTeamIdsCache?.ids ?? new Set();
 }
 
-/** Keep only senior men's internationals and EPL-involved fixtures. */
-function filterFixtures(fixtures: RawFixture[]): RawFixture[] {
+function involvesEplTeam(f: RawFixture, eplIds: Set<number>): boolean {
+  return eplIds.has(f.teams.home.id) || eplIds.has(f.teams.away.id);
+}
+
+/** Keep only senior men's internationals and EPL-club fixtures in any competition. */
+async function filterFixtures(fixtures: RawFixture[]): Promise<RawFixture[]> {
+  const eplIds = await getEplTeamIds();
   return fixtures.filter(
-    (f) => !isWomenFixture(f) && !isYouthFixture(f) && (isInternational(f) || isEplFixture(f)),
+    (f) => !isWomenFixture(f) && !isYouthFixture(f) && (isInternational(f) || involvesEplTeam(f, eplIds)),
   );
 }
 
@@ -119,6 +153,16 @@ function authHeaders(): HeadersInit {
 
 function isConfigured(): boolean {
   return Boolean(API_KEY);
+}
+
+/** Raw fetch using the same auth/base — used for in-memory-cached calls (EPL squad).
+ *  Bypasses Next.js fetch cache so our own TTL is the sole authority. */
+async function apiGet(path: string, params: Record<string, string> = {}): Promise<{ response: unknown[] }> {
+  const url = new URL(`${BASE_URL}${path}`);
+  for (const [k, v] of Object.entries(params)) url.searchParams.set(k, v);
+  const res = await fetch(url.toString(), { headers: authHeaders(), cache: 'no-store' });
+  if (!res.ok) throw new Error(`API-Football ${res.status}: ${path}`);
+  return res.json() as Promise<{ response: unknown[] }>;
 }
 
 async function callApiFootball<T>(path: string, params: Record<string, string>, revalidate: number): Promise<T[]> {
@@ -186,7 +230,7 @@ export async function getFixtures(query: FixturesQuery): Promise<RawFixture[]> {
 
   try {
     const raw = await fetchFixtures(date, timezone);
-    const filtered = filterFixtures(raw);
+    const filtered = await filterFixtures(raw);
 
     if (isPast && filtered.length > 0) {
       historicalCache.set(cacheKey, filtered);
