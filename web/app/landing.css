@@ -215,23 +215,7 @@ body { background: #04141a; color: var(--text-body); overflow-x: hidden; width: 
   .lf-sub-side, .lf-sub-rule { display: none; }
 }
 
-/* ---- Mobile wordmark frame fix (≤640px) ----
-   At narrow widths the wordmark image is ~47–84px tall.
-   Percentage insets (top:-16%) produce only 7–13px clearance —
-   not enough for the 16px corner brackets, causing them to crash into the letters.
-   Switch to fixed pixel insets so clearance is always ≥ 20px.
-   .lf-bronze gets 4px side padding so letters stay clear of the frame edges. */
-@media (max-width: 640px) {
-  .lf-panel {
-    top: -20px; bottom: -20px;
-    left: -8px;  right: -8px;
-  }
-  .lf-deco {
-    top: -20px; bottom: -20px;
-    left: -8px;  right: -8px;
-  }
-  .lf-bronze { padding: 0 4px; }
-}
+/* (mobile wordmark fix moved to end of file, after the 980px overrides it must beat) */
 
 /* ---- Mobile-only STORE button in header (hidden at desktop where nav link is visible) ---- */
 .header-store-mobile { display: inline-flex; }
@@ -283,4 +267,16 @@ body { background: #04141a; color: var(--text-body); overflow-x: hidden; width: 
   .lf-panel { left: 0; right: 0; }
   .lf-deco { inset: -6% 0; }
   img, video, svg { max-width: 100%; }
+}
+
+/* ---- Mobile wordmark frame — MUST come after the 980px block above which it overrides ----
+   The 980px rule sets .lf-deco { inset: -6% 0 } (only 2–3px top clearance at mobile).
+   At ≤600px the 16px bracket arms crash into the letters. Fixed-px values fix this.
+   20px top/bottom = bracket (16px) + 4px breathing room, always. */
+@media (max-width: 600px) {
+  .lf-panel { top: -20px; bottom: -20px; left: -8px; right: -8px; }
+  .lf-deco  { top: -20px; bottom: -20px; left: -8px; right: -8px; }
+  .lf-bronze { padding: 0 6px; }
+  /* SQUAD node sits on the plate's top edge — too close at mobile, hide it */
+  .lf-deco .node { display: none; }
 }
