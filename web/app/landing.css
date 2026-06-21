@@ -217,6 +217,18 @@ body { background: #04141a; color: var(--text-body); overflow-x: hidden; width: 
 
 /* (mobile wordmark fix at end of file, after the 980px overrides it must beat) */
 
+/* ---- About: Follow The Squad — stacked pills, equal width (widest = YouTube) ---- */
+/* SocialPill component is unchanged; CSS only. */
+.about-pill-col {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  align-items: stretch; /* stretches all pills to widest (YouTube) */
+}
+/* inner dark band + copper border fill the stretched pill — keeps the original look */
+.about-pill-col > a > span     { flex: 1; }
+.about-pill-col > a > span > span { flex: 1; }
+
 /* ---- Mobile-only STORE button in header (hidden at desktop where nav link is visible) ---- */
 .header-store-mobile { display: inline-flex; }
 @media (min-width: 981px) { .header-store-mobile { display: none !important; } }

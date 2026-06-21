@@ -102,9 +102,9 @@ function SocialLink({ href, label, color, children }: SocialLinkProps) {
   );
 }
 
-type SocialPillProps = SocialLinkProps & { handle: string; style?: CSSProperties };
+type SocialPillProps = SocialLinkProps & { handle: string };
 
-function SocialPill({ href, label, handle, color, children, style: extraStyle }: SocialPillProps) {
+function SocialPill({ href, label, handle, color, children }: SocialPillProps) {
   const [hover, setHover] = useState(false);
   return (
     <a
@@ -125,14 +125,12 @@ function SocialPill({ href, label, handle, color, children, style: extraStyle }:
           : '0 0 14px rgb(52 211 153 / 0.34), inset 0 0 12px rgb(52 211 153 / 0.1)',
         transition: 'var(--transition-all)',
         textDecoration: 'none',
-        ...extraStyle,
       }}
     >
-      <span style={{ display: 'flex', flex: 1, padding: '2px', background: 'rgb(6 16 22 / 0.92)' }}>
+      <span style={{ display: 'flex', padding: '2px', background: 'rgb(6 16 22 / 0.92)' }}>
         <span
           style={{
             display: 'flex',
-            flex: 1,
             alignItems: 'center',
             gap: '0.6rem',
             padding: '0.5rem 0.85rem 0.5rem 0.6rem',
@@ -535,7 +533,7 @@ function About() {
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.7rem' }}>
           <span className="eyebrow" style={{ color: 'var(--csfc-emerald-bright)' }}>Follow The Squad</span>
-          <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'stretch', gap: '0.55rem' }}>
+          <div className="about-pill-col">
             <SocialPill href="https://youtube.com/@CrocodileSauceFC" label="YouTube" handle="@CrocodileSauceFC" color="#ff3d3d">
               <YouTubeIcon />
             </SocialPill>
