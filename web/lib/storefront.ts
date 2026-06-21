@@ -1,27 +1,11 @@
-// Server-side only — uses Admin API with X-Shopify-Access-Token.
-// Env var: SHOPIFY_ADMIN_TOKEN (Admin API access token from the custom app's credential page).
-// Never exposed to the client; fetch is cached 1 hour via Next.js ISR.
+// Fetches published products from the Shopify public catalog REST endpoint.
+// No authentication required — the /products.json endpoint is public for any
+// published Shopify store. Cached 1 hour via Next.js ISR (revalidate: 3600).
 
 const SHOP = 'shop.crocodilesaucefc.com';
-const API_VERSION = '2025-01';
 
-const PRODUCTS_QUERY = `{
-  products(first: 50, sortKey: TITLE) {
-    nodes {
-      title
-      handle
-      images(first: 10) {
-        nodes {
-          url
-          altText
-        }
-      }
-    }
-  }
-}`;
-
-type RawImage = { url: string; altText: string | null };
-type RawProduct = { title: string; handle: string; images: { nodes: RawImage[] } };
+type RawImage = { src: string; alt?: string };
+type RawProduct = { title: string; handle: string; images: RawImage[] };
 
 export type ShopProduct = {
   title: string;
@@ -32,52 +16,53 @@ export type ShopProduct = {
 };
 
 /**
- * Pick one image from positions 2–(n-1): never image 0 (default/swatch)
- * or the last image (spec/measurement sheet).
+ * Pick one image from positions [1, n-2]:
+ *   skip [0]  → default front/swatch
+ *   skip [-1] → size chart / spec sheet
+ * Falls back to [0] when gallery is too small to slice.
  */
-function pickImage(nodes: RawImage[]): RawImage {
-  if (nodes.length === 0) return { url: '', altText: null };
-  if (nodes.length <= 2) return nodes[0];
+function pickImage(images: RawImage[]): RawImage {
+  if (images.length === 0) return { src: '' };
+  if (images.length <= 2) return images[0];
   const min = 1;
-  const max = nodes.length - 2;
+  const max = images.length - 2;
   const idx = min + Math.floor(Math.random() * (max - min + 1));
-  return nodes[idx];
+  return images[idx];
 }
 
 export async function fetchShopProducts(): Promise<ShopProduct[]> {
-  const token = process.env.SHOPIFY_ADMIN_TOKEN;
-  if (!token) return [];
+  const url = `https://${SHOP}/products.json?limit=250&fields=title,handle,images`;
 
   try {
-    const res = await fetch(
-      `https://${SHOP}/admin/api/${API_VERSION}/graphql.json`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Shopify-Access-Token': token,
-        },
-        body: JSON.stringify({ query: PRODUCTS_QUERY }),
-        next: { revalidate: 3600 },
-      },
-    );
+    const res = await fetch(url, { next: { revalidate: 3600 } });
 
-    if (!res.ok) return [];
+    if (!res.ok) {
+      console.error(`[storefront] products.json ${res.status} ${res.statusText}`);
+      return [];
+    }
 
-    const json = await res.json() as { data?: { products?: { nodes: RawProduct[] } } };
-    const nodes = json.data?.products?.nodes ?? [];
+    const json = await res.json() as { products?: RawProduct[] };
+    const products = json.products ?? [];
 
-    return nodes.map((p) => {
-      const img = pickImage(p.images.nodes);
+    if (products.length === 0) {
+      console.error('[storefront] products.json returned 0 products');
+      return [];
+    }
+
+    console.log(`[storefront] fetched ${products.length} products`);
+
+    return products.map((p) => {
+      const img = pickImage(p.images);
       return {
         title: p.title,
         handle: p.handle,
-        url: `https://shop.crocodilesaucefc.com/products/${p.handle}`,
-        image: img.url,
-        imageAlt: img.altText ?? p.title,
+        url: `https://${SHOP}/products/${p.handle}`,
+        image: img.src,
+        imageAlt: img.alt ?? p.title,
       };
     });
-  } catch {
+  } catch (err) {
+    console.error('[storefront] fetch failed:', err);
     return [];
   }
 }
