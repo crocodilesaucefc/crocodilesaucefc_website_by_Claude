@@ -2,7 +2,7 @@ import { MatchHub } from '@/components/match-hub/MatchHub';
 import { getFixtures } from '@/lib/api-football';
 
 export const metadata = {
-  title: 'World Cup Hub — CrocodileSauce F.C.',
+  title: 'Match Hub — CrocodileSauce F.C.',
 };
 
 export default async function WorldCupHubPage() {

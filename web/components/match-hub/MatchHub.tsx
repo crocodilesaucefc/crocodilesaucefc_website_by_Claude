@@ -334,12 +334,26 @@ export function MatchHub({ initialFixtures, initialDate }: MatchHubProps) {
   }, [data, finishedEvents]);
 
   return (
-    <section id="world-cup-hub" className="section anchor" data-screen-label="Match Hub" style={{ maxWidth: '64rem', margin: '0 auto' }}>
+    <section id="match-hub" className="section anchor" data-screen-label="Match Hub" style={{ maxWidth: '64rem', margin: '0 auto' }}>
 
       {/* Section header — status derived from date, no manual tabs */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.6rem' }}>
-        <span className="csfc-eyebrow" style={{ color: 'var(--csfc-emerald-bright)' }}>
-          World Cup Hub — Match HUD
+        <span style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          padding: '0.4rem 0.85rem',
+          fontFamily: 'var(--font-display)',
+          fontWeight: 700,
+          fontSize: '0.65rem',
+          letterSpacing: '0.2em',
+          textTransform: 'uppercase',
+          color: 'var(--csfc-emerald-bright)',
+          background: 'rgb(21 128 61 / 0.16)',
+          border: '1px solid var(--csfc-emerald)',
+          clipPath: 'var(--clip-tag)',
+          lineHeight: 1,
+        }}>
+          Match Hub
         </span>
         <span className="csfc-eyebrow" style={{
           fontSize: '0.65rem',

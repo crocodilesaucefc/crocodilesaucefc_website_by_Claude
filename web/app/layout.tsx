@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     template: "%s · CrocodileSauce F.C.",
   },
   description:
-    "The most ferocious low-poly football squad on the planet. Live World Cup match HUDs, viral highlight reels, and the official kit collection.",
+    "The most ferocious low-poly football squad on the planet. Live match HUDs, viral highlight reels, and the official kit collection.",
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary",
     title: "CrocodileSauce F.C.",
-    description: "Low-Poly United — live World Cup match hub.",
+    description: "Low-Poly United — live match hub.",
     images: ["/assets/logo_medallion.png"],
   },
 };
