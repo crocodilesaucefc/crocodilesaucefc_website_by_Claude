@@ -235,8 +235,10 @@ function Header() {
     <header
       className="header-pad"
       style={{
-        position: 'sticky',
+        position: 'fixed',
         top: 0,
+        left: 0,
+        right: 0,
         zIndex: 60,
         display: 'flex',
         alignItems: 'center',
@@ -814,6 +816,7 @@ export function Landing({ hub, fixtures, shopProducts }: { hub: ReactNode; fixtu
       <div className="vignette" />
       <div id="app">
         <Header />
+        <div style={{ height: 68 }} aria-hidden="true" />
         <Hero fixtures={fixtures} />
         <div id="match-hub" className="anchor">{hub}</div>
         <About />

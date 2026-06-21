@@ -22,7 +22,7 @@
   position: fixed; inset: 0; z-index: 0; pointer-events: none;
   background: radial-gradient(ellipse at 50% 40%, transparent 58%, rgb(0 0 0 / 0.42) 100%);
 }
-html { overflow-x: hidden; }
+html { overflow-x: clip; }
 html, body { margin: 0; padding: 0; }
 *, *::before, *::after { box-sizing: border-box; }
 body { background: #04141a; color: var(--text-body); overflow-x: hidden; width: 100%; max-width: 100%; }
