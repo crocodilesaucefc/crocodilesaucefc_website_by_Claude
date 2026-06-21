@@ -336,29 +336,17 @@ export function MatchHub({ initialFixtures, initialDate }: MatchHubProps) {
   return (
     <section id="match-hub" className="section anchor" data-screen-label="Match Hub" style={{ maxWidth: '64rem', margin: '0 auto' }}>
 
-      {/* Section header — status derived from date, no manual tabs */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.6rem' }}>
-        <span style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          padding: '0.4rem 0.85rem',
-          fontFamily: 'var(--font-display)',
-          fontWeight: 700,
-          fontSize: '0.65rem',
-          letterSpacing: '0.2em',
-          textTransform: 'uppercase',
-          color: 'var(--csfc-emerald-bright)',
-          background: 'rgb(21 128 61 / 0.16)',
-          border: '1px solid var(--csfc-emerald)',
-          clipPath: 'var(--clip-tag)',
-          lineHeight: 1,
-        }}>
-          Match Hub
-        </span>
+      {/* Section header — matches Trending Clips / The Armory heading pattern */}
+      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.8rem' }}>
+        <div>
+          <div className="eyebrow">Live Football · Every Fixture</div>
+          <h2 className="csfc-display-gradient" style={{ fontSize: 'clamp(2rem, 4vw, 3rem)' }}>Match Hub</h2>
+        </div>
         <span className="csfc-eyebrow" style={{
           fontSize: '0.65rem',
           color: isToday ? 'var(--csfc-copper-bright)' : 'var(--csfc-text-muted)',
           letterSpacing: 'var(--tracking-wide)',
+          marginBottom: '0.3rem',
         }}>
           {statusLabel}
         </span>
