@@ -1,3 +1,7 @@
+// Server-side only — uses Admin API with X-Shopify-Access-Token.
+// Env var: SHOPIFY_ADMIN_TOKEN (Admin API access token from the custom app's credential page).
+// Never exposed to the client; fetch is cached 1 hour via Next.js ISR.
+
 const SHOP = 'shop.crocodilesaucefc.com';
 const API_VERSION = '2025-01';
 
@@ -8,7 +12,7 @@ const PRODUCTS_QUERY = `{
       handle
       images(first: 10) {
         nodes {
-          url(transform: { maxWidth: 800 })
+          url
           altText
         }
       }
@@ -28,8 +32,8 @@ export type ShopProduct = {
 };
 
 /**
- * Pick one image from positions 2–(n-1): never image 0 (default placeholder)
- * or image n-1 (spec/measurement sheet). Falls back cleanly for small galleries.
+ * Pick one image from positions 2–(n-1): never image 0 (default/swatch)
+ * or the last image (spec/measurement sheet).
  */
 function pickImage(nodes: RawImage[]): RawImage {
   if (nodes.length === 0) return { url: '', altText: null };
@@ -41,19 +45,22 @@ function pickImage(nodes: RawImage[]): RawImage {
 }
 
 export async function fetchShopProducts(): Promise<ShopProduct[]> {
-  const token = process.env.SHOPIFY_STOREFRONT_TOKEN;
+  const token = process.env.SHOPIFY_ADMIN_TOKEN;
   if (!token) return [];
 
   try {
-    const res = await fetch(`https://${SHOP}/api/${API_VERSION}/graphql.json`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Shopify-Storefront-Access-Token': token,
+    const res = await fetch(
+      `https://${SHOP}/admin/api/${API_VERSION}/graphql.json`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Shopify-Access-Token': token,
+        },
+        body: JSON.stringify({ query: PRODUCTS_QUERY }),
+        next: { revalidate: 3600 },
       },
-      body: JSON.stringify({ query: PRODUCTS_QUERY }),
-      next: { revalidate: 3600 },
-    });
+    );
 
     if (!res.ok) return [];
 
