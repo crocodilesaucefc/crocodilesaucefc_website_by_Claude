@@ -5,6 +5,8 @@ import Image from 'next/image';
 import { Badge, Button, GlassPanel, NavLink, Tag, UniBevel } from '@/components/ds';
 import { LIVE_STATUSES } from '@/lib/queries';
 import type { RawFixture } from '@/lib/types';
+import { ArmoryCarousel } from './ArmoryCarousel';
+import type { ShopProduct } from '@/lib/storefront';
 
 const A = '/assets/';
 
@@ -673,7 +675,7 @@ function ProductCard({ p }: { p: Product }) {
   );
 }
 
-function Store() {
+function Store({ shopProducts }: { shopProducts: ShopProduct[] }) {
   return (
     <section id="store" className="section anchor" data-screen-label="Store">
       <div style={{ textAlign: 'center' }} className="eyebrow">Locker Room · Squad Drops</div>
@@ -702,14 +704,7 @@ function Store() {
           </div>
         </div>
       </a>
-      <div className="store-grid">
-        {PRODUCTS.map((p) => <ProductCard key={p.img} p={p} />)}
-      </div>
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2.4rem' }}>
-        <a href={SHOP_URL} style={{ textDecoration: 'none' }}>
-          <Button variant="cta" iconRight={<Ext />}>Shop All Kits</Button>
-        </a>
-      </div>
+      <ArmoryCarousel products={shopProducts} />
     </section>
   );
 }
@@ -752,7 +747,7 @@ function Footer() {
 
 /* ============================== LANDING ============================== */
 
-export function Landing({ hub, fixtures }: { hub: ReactNode; fixtures: RawFixture[] }) {
+export function Landing({ hub, fixtures, shopProducts }: { hub: ReactNode; fixtures: RawFixture[]; shopProducts: ShopProduct[] }) {
   return (
     <>
       <div className="bg-photo" />
@@ -764,7 +759,7 @@ export function Landing({ hub, fixtures }: { hub: ReactNode; fixtures: RawFixtur
         <div id="match-hub" className="anchor">{hub}</div>
         <About />
         <ViralGallery />
-        <Store />
+        <Store shopProducts={shopProducts} />
         <Footer />
       </div>
     </>
