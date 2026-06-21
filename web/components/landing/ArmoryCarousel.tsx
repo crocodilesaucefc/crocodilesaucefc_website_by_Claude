@@ -66,7 +66,7 @@ function ProductCard({ p }: { p: ShopProduct }) {
           <div
             style={{
               position: 'relative',
-              aspectRatio: '4 / 5',
+              aspectRatio: '1 / 1',
               overflow: 'hidden',
               background: 'radial-gradient(ellipse at 50% 40%, #14323a, #04141a)',
               border: '1px solid var(--csfc-copper-30)',
