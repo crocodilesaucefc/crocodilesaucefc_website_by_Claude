@@ -165,6 +165,9 @@ body { background: #04141a; color: var(--text-body); overflow-x: hidden; width: 
   .lf-panel::after  { animation: none !important; display: none; }
 }
 
+/* Kill the cyan halo bleed around the letters */
+.logo-free-mark .lf-glow { display: none; }
+
 /* HUD detailing layered over the clean rectangle (shape stays square) */
 .lf-deco { position: absolute; z-index: 2; inset: -8% -3%; pointer-events: none; }
 /* corner L-brackets */
