@@ -130,8 +130,7 @@ body { background: #04141a; color: var(--text-body); overflow-x: hidden; width: 
 /* ---- Hero logo: BORDERLESS wordmark on a green-glass HUD panel (badge treatment) ---- */
 .logo-free { position: relative; display: inline-block; width: min(100%, 710px); margin: 0 0 1.7rem; }
 .logo-free-mark { position: relative; isolation: isolate; display: block; }
-.lf-bronze { position: relative; z-index: 2; display: block; width: 100%; height: auto;
-  filter: drop-shadow(0 9px 22px rgb(0 0 0 / 0.5)) drop-shadow(0 2px 1px rgb(0 0 0 / 0.5)); }
+.lf-bronze { position: relative; z-index: 2; display: block; width: 100%; height: auto; }
 /* green-glass HUD backing — matched to reference.html */
 .lf-panel { position: absolute; z-index: 0; left: -2%; right: -2%; top: -16%; bottom: -16%; pointer-events: none;
   background:
