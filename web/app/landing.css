@@ -215,6 +215,24 @@ body { background: #04141a; color: var(--text-body); overflow-x: hidden; width: 
   .lf-sub-side, .lf-sub-rule { display: none; }
 }
 
+/* ---- Mobile wordmark frame fix (≤640px) ----
+   At narrow widths the wordmark image is ~47–84px tall.
+   Percentage insets (top:-16%) produce only 7–13px clearance —
+   not enough for the 16px corner brackets, causing them to crash into the letters.
+   Switch to fixed pixel insets so clearance is always ≥ 20px.
+   .lf-bronze gets 4px side padding so letters stay clear of the frame edges. */
+@media (max-width: 640px) {
+  .lf-panel {
+    top: -20px; bottom: -20px;
+    left: -8px;  right: -8px;
+  }
+  .lf-deco {
+    top: -20px; bottom: -20px;
+    left: -8px;  right: -8px;
+  }
+  .lf-bronze { padding: 0 4px; }
+}
+
 /* ---- Responsive layout grids (inline styles can't hold media queries) ---- */
 .hero-grid { display: grid; grid-template-columns: 1fr 1.12fr; align-items: center; gap: 1.4rem; }
 .gallery-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.9rem; }
