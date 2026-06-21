@@ -233,6 +233,10 @@ body { background: #04141a; color: var(--text-body); overflow-x: hidden; width: 
   .lf-bronze { padding: 0 4px; }
 }
 
+/* ---- Mobile-only STORE button in header (hidden at desktop where nav link is visible) ---- */
+.header-store-mobile { display: inline-flex; }
+@media (min-width: 981px) { .header-store-mobile { display: none !important; } }
+
 /* ---- Responsive layout grids (inline styles can't hold media queries) ---- */
 .hero-grid { display: grid; grid-template-columns: 1fr 1.12fr; align-items: center; gap: 1.4rem; }
 .gallery-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.9rem; }

@@ -100,9 +100,9 @@ function SocialLink({ href, label, color, children }: SocialLinkProps) {
   );
 }
 
-type SocialPillProps = SocialLinkProps & { handle: string };
+type SocialPillProps = SocialLinkProps & { handle: string; style?: CSSProperties };
 
-function SocialPill({ href, label, handle, color, children }: SocialPillProps) {
+function SocialPill({ href, label, handle, color, children, style: extraStyle }: SocialPillProps) {
   const [hover, setHover] = useState(false);
   return (
     <a
@@ -123,12 +123,14 @@ function SocialPill({ href, label, handle, color, children }: SocialPillProps) {
           : '0 0 14px rgb(52 211 153 / 0.34), inset 0 0 12px rgb(52 211 153 / 0.1)',
         transition: 'var(--transition-all)',
         textDecoration: 'none',
+        ...extraStyle,
       }}
     >
-      <span style={{ display: 'flex', padding: '2px', background: 'rgb(6 16 22 / 0.92)' }}>
+      <span style={{ display: 'flex', flex: 1, padding: '2px', background: 'rgb(6 16 22 / 0.92)' }}>
         <span
           style={{
             display: 'flex',
+            flex: 1,
             alignItems: 'center',
             gap: '0.6rem',
             padding: '0.5rem 0.85rem 0.5rem 0.6rem',
@@ -144,6 +146,54 @@ function SocialPill({ href, label, handle, color, children }: SocialPillProps) {
             </span>
             <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.62rem', color: 'var(--csfc-text-muted)' }}>{handle}</span>
           </span>
+        </span>
+      </span>
+    </a>
+  );
+}
+
+function ShoppingBagIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" width="100%" height="100%">
+      <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+      <line x1="3" y1="6" x2="21" y2="6" />
+      <path d="M16 10a4 4 0 01-8 0" />
+    </svg>
+  );
+}
+
+function StoreMobileBtn() {
+  const [hover, setHover] = useState(false);
+  return (
+    <a
+      href="https://shop.crocodilesaucefc.com"
+      className="header-store-mobile"
+      aria-label="Store"
+      title="Store"
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        width: 50,
+        height: 50,
+        flexShrink: 0,
+        padding: '3px',
+        border: `1px solid ${hover ? 'var(--csfc-emerald-bright)' : 'rgb(52 211 153 / 0.95)'}`,
+        background: hover ? 'rgb(34 197 119 / 0.40)' : 'rgb(34 197 119 / 0.26)',
+        boxShadow: hover
+          ? '0 0 22px rgb(52 211 153 / 0.55), inset 0 0 14px rgb(52 211 153 / 0.18)'
+          : '0 0 14px rgb(52 211 153 / 0.34), inset 0 0 12px rgb(52 211 153 / 0.1)',
+        transition: 'var(--transition-all)',
+        textDecoration: 'none',
+      }}
+    >
+      <span style={{ flex: 1, display: 'flex', padding: '2px', background: 'rgb(6 16 22 / 0.92)', height: '100%' }}>
+        <span style={{
+          flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+          color: 'var(--csfc-emerald-bright)',
+          border: '1.5px solid transparent',
+          background: 'linear-gradient(rgb(10 24 32 / 0.96), rgb(6 16 22 / 0.96)) padding-box, linear-gradient(140deg, #9a5824 0%, #b45309 50%, #9a5824 100%) border-box',
+        }}>
+          <span style={{ width: 22, height: 22, display: 'block' }}><ShoppingBagIcon /></span>
         </span>
       </span>
     </a>
@@ -206,6 +256,7 @@ function Header() {
       </nav>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.7rem' }}>
+        <StoreMobileBtn />
         <SocialLinks />
       </div>
     </header>
@@ -483,14 +534,14 @@ function About() {
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.7rem' }}>
           <span className="eyebrow" style={{ color: 'var(--csfc-emerald-bright)' }}>Follow The Squad</span>
-          <div style={{ display: 'flex', gap: '0.55rem', flexWrap: 'wrap' }}>
-            <SocialPill href="https://youtube.com/@CrocodileSauceFC" label="YouTube" handle="@CrocodileSauceFC" color="#ff3d3d">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
+            <SocialPill href="https://youtube.com/@CrocodileSauceFC" label="YouTube" handle="@CrocodileSauceFC" color="#ff3d3d" style={{ width: '100%' }}>
               <YouTubeIcon />
             </SocialPill>
-            <SocialPill href="https://instagram.com/crocodilesaucefc" label="Instagram" handle="@crocodilesaucefc" color="#e879a8">
+            <SocialPill href="https://instagram.com/crocodilesaucefc" label="Instagram" handle="@crocodilesaucefc" color="#e879a8" style={{ width: '100%' }}>
               <InstagramIcon />
             </SocialPill>
-            <SocialPill href="https://tiktok.com/@crocodilesauce_fc" label="TikTok" handle="@crocodilesauce_fc" color="#f8fafc">
+            <SocialPill href="https://tiktok.com/@crocodilesauce_fc" label="TikTok" handle="@crocodilesauce_fc" color="#f8fafc" style={{ width: '100%' }}>
               <TikTokIcon />
             </SocialPill>
           </div>
