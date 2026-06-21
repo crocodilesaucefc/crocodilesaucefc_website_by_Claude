@@ -169,7 +169,7 @@ function SocialLinks() {
 /* ============================ HEADER ============================ */
 
 function Header() {
-  const links = ['Home', 'Match Hub', 'About', 'Viral Gallery', 'Store'];
+  const links = ['Home', 'Match Hub', 'About', 'Viral Gallery'];
   const [active, setActive] = useState('Home');
   const slug = (l: string) => '#' + l.toLowerCase().replace(/ /g, '-');
 
@@ -202,6 +202,7 @@ function Header() {
             {l}
           </NavLink>
         ))}
+        <NavLink href="https://shop.crocodilesaucefc.com" active={false}>Store</NavLink>
       </nav>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.7rem' }}>
@@ -624,24 +625,29 @@ function ViralGallery() {
 
 /* ============================ STORE ============================ */
 
-type Product = { img: string; name: string; team: string; price: string };
+const SHOP_URL = 'https://shop.crocodilesaucefc.com';
+
+type Product = { img: string; name: string; team: string; price: string; href: string };
 
 const PRODUCTS: Product[] = [
-  { img: 'jersey_albiceleste', name: 'Albiceleste Poly', team: 'Argentina', price: '$74' },
-  { img: 'jersey_canary', name: 'Canary Facet', team: 'Brazil', price: '$74' },
-  { img: 'jersey_blanco_rojo', name: 'Blanco Rojo', team: 'Peru', price: '$79' },
-  { img: 'jersey_tricolor', name: 'Tricolore Blank', team: 'France', price: '$74' },
-  { img: 'jersey_verderojo', name: 'Verde Rojo', team: 'Portugal', price: '$74' },
+  { img: 'jersey_albiceleste', name: 'Albiceleste Poly', team: 'Argentina', price: '$74', href: SHOP_URL },
+  { img: 'jersey_canary',      name: 'Canary Facet',     team: 'Brazil',    price: '$74', href: SHOP_URL },
+  { img: 'jersey_blanco_rojo', name: 'Blanco Rojo',      team: 'Peru',      price: '$79', href: SHOP_URL },
+  { img: 'jersey_tricolor',    name: 'Tricolore Blank',  team: 'France',    price: '$74', href: SHOP_URL },
+  { img: 'jersey_verderojo',   name: 'Verde Rojo',       team: 'Portugal',  price: '$74', href: SHOP_URL },
 ];
 
 function ProductCard({ p }: { p: Product }) {
   const [hover, setHover] = useState(false);
   return (
     <UniBevel>
-      <div
+      <a
+        href={p.href}
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
         style={{
+          display: 'block',
+          textDecoration: 'none',
           background: hover ? 'var(--metal-bronze-lit)' : 'var(--metal-bronze)',
           padding: '3px',
           clipPath: 'var(--clip-card)',
@@ -662,7 +668,7 @@ function ProductCard({ p }: { p: Product }) {
           </div>
           <Button variant="cta" size="sm" style={{ width: '100%' }} iconRight={<Ext />}>Shop Now</Button>
         </div>
-      </div>
+      </a>
     </UniBevel>
   );
 }
@@ -675,7 +681,7 @@ function Store() {
       <p className="csfc-body" style={{ textAlign: 'center', maxWidth: '52ch', margin: '0 auto 2.6rem' }}>
         The 2026 World Squad collection. Every kit carries the embossed bronze crest. Printed &amp; shipped worldwide.
       </p>
-      <div style={{ position: 'relative', margin: '0 auto 3rem', maxWidth: 760,
+      <a href={SHOP_URL} style={{ display: 'block', textDecoration: 'none', position: 'relative', margin: '0 auto 3rem', maxWidth: 760,
         background: 'rgb(34 197 119 / 0.26)', padding: '7px',
         border: '1px solid rgb(52 211 153 / 0.95)',
         boxShadow: '0 0 24px rgb(52 211 153 / 0.38), inset 0 0 16px rgb(52 211 153 / 0.12)' }}>
@@ -695,9 +701,14 @@ function Store() {
             </div>
           </div>
         </div>
-      </div>
+      </a>
       <div className="store-grid">
         {PRODUCTS.map((p) => <ProductCard key={p.img} p={p} />)}
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '2.4rem' }}>
+        <a href={SHOP_URL} style={{ textDecoration: 'none' }}>
+          <Button variant="cta" iconRight={<Ext />}>Shop All Kits</Button>
+        </a>
       </div>
     </section>
   );
