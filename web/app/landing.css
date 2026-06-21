@@ -215,7 +215,7 @@ body { background: #04141a; color: var(--text-body); overflow-x: hidden; width: 
   .lf-sub-side, .lf-sub-rule { display: none; }
 }
 
-/* (mobile wordmark fix moved to end of file, after the 980px overrides it must beat) */
+/* (mobile wordmark fix at end of file, after the 980px overrides it must beat) */
 
 /* ---- Mobile-only STORE button in header (hidden at desktop where nav link is visible) ---- */
 .header-store-mobile { display: inline-flex; }
