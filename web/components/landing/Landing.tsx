@@ -433,7 +433,6 @@ function Hero({ fixtures }: { fixtures: RawFixture[] }) {
               <span className="lf-panel" aria-hidden="true" />
               <span className="lf-deco" aria-hidden="true">
                 <i className="cn tl" /><i className="cn tr" /><i className="cn bl" /><i className="cn br" />
-                <i className="tick t" /><i className="tick b" />
                 <i className="cap l" /><i className="cap r" />
                 <span className="node"><i /><span>SQUAD</span></span>
               </span>
