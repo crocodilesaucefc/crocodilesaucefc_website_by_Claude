@@ -193,7 +193,7 @@ function Header() {
     >
       <a href="#home" onClick={() => setActive('Home')} style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', textDecoration: 'none' }}>
         <Image src={A + 'logo_medallion.png'} alt="CrocodileSauceFC crest" width={46} height={46} style={{ width: 46, height: 46, filter: 'drop-shadow(0 2px 6px rgb(0 0 0 / 0.6))' }} />
-        <Image className="hide-sm" src={A + 'wordmark.png'} alt="Crocodile Sauce F.C." width={922} height={128} style={{ height: 26, width: 'auto', filter: 'drop-shadow(0 2px 5px rgb(0 0 0 / 0.55))' }} />
+        <Image className="hide-sm" src={A + 'wordmark-emerald-wide.png'} alt="Crocodile Sauce F.C." width={922} height={128} style={{ height: 26, width: 'auto', filter: 'drop-shadow(0 2px 5px rgb(0 0 0 / 0.55))' }} />
       </a>
 
       <nav className="nav-links">
@@ -390,7 +390,7 @@ function Hero({ fixtures }: { fixtures: RawFixture[] }) {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img className="lf-traces" src={A + 'wordmark_letters_traces.svg'} alt="" aria-hidden="true" />
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img className="lf-bronze" src={A + 'wordmark.png'} alt="Crocodile Sauce F.C." />
+              <img className="lf-bronze" src={A + 'wordmark-emerald-wide.png'} alt="Crocodile Sauce F.C." />
             </span>
           </h1>
           <p className="csfc-body" style={{ fontSize: '1.12rem', maxWidth: '42ch', margin: '0 0 2.1rem' }}>
@@ -712,7 +712,7 @@ function Footer() {
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.7rem', marginBottom: '1rem' }}>
             <Image src={A + 'logo_medallion.png'} alt="" width={44} height={44} style={{ width: 44, height: 44 }} />
-            <Image src={A + 'wordmark.png'} alt="Crocodile Sauce F.C." width={922} height={128} style={{ height: 26, width: 'auto', filter: 'drop-shadow(0 2px 5px rgb(0 0 0 / 0.5))' }} />
+            <Image src={A + 'wordmark-emerald-wide.png'} alt="Crocodile Sauce F.C." width={922} height={128} style={{ height: 26, width: 'auto', filter: 'drop-shadow(0 2px 5px rgb(0 0 0 / 0.5))' }} />
           </div>
           <p className="csfc-body" style={{ fontSize: '0.95rem', maxWidth: '40ch', marginBottom: '1.4rem' }}>
             The most ferocious low-poly football squad on the planet. Join the faithful.

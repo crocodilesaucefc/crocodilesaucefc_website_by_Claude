@@ -141,6 +141,30 @@ body { background: #04141a; color: var(--text-body); overflow-x: hidden; width: 
   border-top: 1px solid rgb(52 211 153 / 0.55); border-bottom: 1px solid rgb(52 211 153 / 0.55);
   box-shadow: 0 -1px 9px rgb(52 211 153 / 0.22), 0 1px 9px rgb(52 211 153 / 0.22),
               0 0 20px rgb(52 211 153 / 0.1), inset 0 0 42px rgb(52 211 153 / 0.08); }
+/* Wordmark plate sheen — Option C: sweep + glints (sheen.css) */
+.lf-panel { overflow: hidden; }
+.lf-panel::after {
+  content: ""; position: absolute; top: 0; bottom: 0; left: -40%; width: 35%;
+  pointer-events: none;
+  background: linear-gradient(100deg, transparent, rgb(190 255 230 / 0.45), transparent);
+  transform: skewX(-18deg);
+  animation: lfSheenSweep 3.6s ease-in-out infinite;
+}
+@keyframes lfSheenSweep { 0% { left: -40%; } 55%, 100% { left: 130%; } }
+.lf-panel::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(circle at 30% 38%, rgb(214 255 240 / 0.7) 0, transparent 2.2px),
+    radial-gradient(circle at 64% 64%, rgb(214 255 240 / 0.6) 0, transparent 2px),
+    radial-gradient(circle at 82% 30%, rgb(214 255 240 / 0.55) 0, transparent 1.8px);
+  opacity: 0; animation: lfSheenGlint 3.6s ease-in-out infinite;
+}
+@keyframes lfSheenGlint { 0%, 30% { opacity: 0; } 42% { opacity: 1; } 60%, 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .lf-panel::before { animation: none !important; }
+  .lf-panel::after  { animation: none !important; display: none; }
+}
+
 /* HUD detailing layered over the clean rectangle (shape stays square) */
 .lf-deco { position: absolute; z-index: 2; inset: -8% -3%; pointer-events: none; }
 /* corner L-brackets */
