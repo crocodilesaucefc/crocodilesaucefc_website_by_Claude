@@ -533,14 +533,14 @@ function About() {
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.7rem' }}>
           <span className="eyebrow" style={{ color: 'var(--csfc-emerald-bright)' }}>Follow The Squad</span>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
-            <SocialPill href="https://youtube.com/@CrocodileSauceFC" label="YouTube" handle="@CrocodileSauceFC" color="#ff3d3d" style={{ width: '100%' }}>
+          <div style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'stretch', gap: '0.55rem' }}>
+            <SocialPill href="https://youtube.com/@CrocodileSauceFC" label="YouTube" handle="@CrocodileSauceFC" color="#ff3d3d">
               <YouTubeIcon />
             </SocialPill>
-            <SocialPill href="https://instagram.com/crocodilesaucefc" label="Instagram" handle="@crocodilesaucefc" color="#e879a8" style={{ width: '100%' }}>
+            <SocialPill href="https://instagram.com/crocodilesaucefc" label="Instagram" handle="@crocodilesaucefc" color="#e879a8">
               <InstagramIcon />
             </SocialPill>
-            <SocialPill href="https://tiktok.com/@crocodilesauce_fc" label="TikTok" handle="@crocodilesauce_fc" color="#f8fafc" style={{ width: '100%' }}>
+            <SocialPill href="https://tiktok.com/@crocodilesauce_fc" label="TikTok" handle="@crocodilesauce_fc" color="#f8fafc">
               <TikTokIcon />
             </SocialPill>
           </div>
