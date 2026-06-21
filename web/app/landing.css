@@ -136,8 +136,9 @@ body { background: #04141a; color: var(--text-body); overflow-x: hidden; width: 
 /* green-glass HUD backing — matched to reference.html */
 .lf-panel { position: absolute; z-index: 0; left: -2%; right: -2%; top: -16%; bottom: -16%; pointer-events: none;
   background:
-    repeating-linear-gradient(0deg, rgb(52 211 153 / 0.05) 0 1px, transparent 1px 5px),
-    rgb(34 197 119 / 0.26);
+    repeating-linear-gradient(0deg, rgb(94 234 212 / 0.13) 0 1px, transparent 1px 5px),
+    linear-gradient(0deg, rgb(34 197 119 / 0.16), rgb(34 197 119 / 0.16)),
+    rgb(5 18 13 / 0.82);
   -webkit-backdrop-filter: blur(7px); backdrop-filter: blur(7px);
   border-top: 1px solid rgb(52 211 153 / 0.4); border-bottom: 1px solid rgb(52 211 153 / 0.4);
   box-shadow: inset 0 0 26px rgb(6 16 22 / 0.4); }
