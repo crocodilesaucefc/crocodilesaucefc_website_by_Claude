@@ -221,7 +221,15 @@ function SocialLinks() {
 function Header() {
   const links = ['Home', 'Match Hub', 'About', 'Viral Gallery'];
   const [active, setActive] = useState('Home');
+  const [scrolled, setScrolled] = useState(false);
   const slug = (l: string) => '#' + l.toLowerCase().replace(/ /g, '-');
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 60);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   return (
     <header
@@ -234,11 +242,14 @@ function Header() {
         alignItems: 'center',
         justifyContent: 'space-between',
         gap: '2rem',
-        padding: '0.9rem 2.5rem',
-        background: 'linear-gradient(180deg, rgb(2 6 23 / 0.94), rgb(2 6 23 / 0.55))',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
+        padding: scrolled ? '0.55rem 2.5rem' : '0.9rem 2.5rem',
+        background: scrolled
+          ? 'rgb(2 8 16 / 0.97)'
+          : 'linear-gradient(180deg, rgb(2 6 23 / 0.94), rgb(2 6 23 / 0.55))',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
         borderBottom: '1px solid var(--csfc-copper-30)',
+        transition: 'padding 0.3s ease, background 0.3s ease',
       }}
     >
       <a href="#home" onClick={() => setActive('Home')} style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', textDecoration: 'none' }}>

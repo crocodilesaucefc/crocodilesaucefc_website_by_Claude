@@ -26,7 +26,9 @@ html { overflow-x: hidden; }
 html, body { margin: 0; padding: 0; }
 *, *::before, *::after { box-sizing: border-box; }
 body { background: #04141a; color: var(--text-body); overflow-x: hidden; width: 100%; max-width: 100%; }
-#app { position: relative; z-index: 1; min-height: 100vh; width: 100%; max-width: 100%; overflow-x: clip; }
+#app { position: relative; z-index: 1; min-height: 100vh; width: 100%; max-width: 100%; }
+/* Anchor offset — keeps section headings below the sticky header after jump */
+.anchor { scroll-margin-top: 72px; }
 
 /* ---- Hero floating mascot ---- */
 @keyframes floaty { 0%,100% { transform: translateY(0) rotate(-0.4deg); } 50% { transform: translateY(-22px) rotate(0.4deg); } }
