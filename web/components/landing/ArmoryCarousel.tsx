@@ -63,7 +63,6 @@ function ProductCard({ p }: { p: ShopProduct }) {
             gap: '0.5rem',
           }}
         >
-          {/* image — 4:5 ratio sits closer to square, matches portrait model shots */}
           <div
             style={{
               position: 'relative',
@@ -93,25 +92,10 @@ function ProductCard({ p }: { p: ShopProduct }) {
             )}
           </div>
 
-          {/* Shop Now button */}
+          {/* holographic green SHOP NOW — span because parent <a> is the link */}
           <span
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '0.4rem',
-              padding: '0.5rem 1rem',
-              fontFamily: 'var(--font-display)',
-              fontWeight: 700,
-              fontSize: '0.6875rem',
-              textTransform: 'uppercase',
-              letterSpacing: 'var(--tracking-wide)',
-              color: '#241204',
-              background: 'var(--metal-bronze)',
-              clipPath: 'var(--clip-button)',
-              width: '100%',
-              whiteSpace: 'nowrap',
-            }}
+            className="csfc-plasma-btn"
+            style={{ fontSize: '0.6875rem', padding: '0.5rem 1rem', width: '100%' }}
           >
             Shop Now
             <span style={{ display: 'inline-flex', width: '1.05em', height: '1.05em' }}><ExtIcon /></span>
@@ -148,43 +132,6 @@ function NavBtn({ onClick, disabled, children, label }: {
     >
       {children}
     </button>
-  );
-}
-
-/* ---- Shop All button ---- */
-function ShopAllBtn() {
-  return (
-    <a href={SHOP_URL} style={{ textDecoration: 'none', justifySelf: 'end' }}>
-      <span
-        style={{
-          display: 'inline-flex',
-          padding: '3px',
-          background: 'var(--metal-bronze)',
-          clipPath: 'var(--clip-button)',
-        }}
-      >
-        <span
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.55rem',
-            padding: '0.8rem 1.7rem',
-            background: 'var(--metal-bronze)',
-            clipPath: 'var(--clip-button)',
-            fontFamily: 'var(--font-display)',
-            fontWeight: 700,
-            fontSize: '0.8125rem',
-            textTransform: 'uppercase',
-            letterSpacing: 'var(--tracking-wide)',
-            color: '#241204',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          Shop All Kits
-          <span style={{ display: 'inline-flex', width: '1.05em', height: '1.05em' }}><ExtIcon /></span>
-        </span>
-      </span>
-    </a>
   );
 }
 
@@ -240,7 +187,7 @@ export function ArmoryCarousel({ products }: { products: ShopProduct[] }) {
         </div>
       </div>
 
-      {/* controls — 3-col grid: empty | arrows (center) | Shop All (right) */}
+      {/* controls — 3-col: empty | arrows (center) | Shop All (right) */}
       <div
         style={{
           display: 'grid',
@@ -259,15 +206,84 @@ export function ArmoryCarousel({ products }: { products: ShopProduct[] }) {
             <ArrowRight />
           </NavBtn>
         </div>
-        <ShopAllBtn />
+        {/* holographic SHOP ALL KITS — <a> is the link, class supplies the look */}
+        <a
+          href={SHOP_URL}
+          className="csfc-plasma-btn"
+          style={{ justifySelf: 'end', fontSize: '0.82rem', padding: '0.85rem 1.8rem', textDecoration: 'none' }}
+        >
+          Shop All Kits
+          <span style={{ display: 'inline-flex', width: '1.05em', height: '1.05em' }}><ExtIcon /></span>
+        </a>
       </div>
 
-      {/* responsive slide width */}
       <style>{`
+        /* ── Responsive slide widths ── */
         .armory-slide { --slide-basis: 25%; }
         @media (max-width: 1200px) { .armory-slide { --slide-basis: 33.333%; } }
         @media (max-width: 900px)  { .armory-slide { --slide-basis: 50%; } }
         @media (max-width: 480px)  { .armory-slide { --slide-basis: 80%; } }
+
+        /* ── Plasma / holographic green button (matches ATC button on product page) ── */
+        .csfc-plasma-btn {
+          position: relative;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          overflow: hidden;
+          font-family: 'Orbitron', var(--font-display), sans-serif;
+          font-weight: 800;
+          letter-spacing: 0.13em;
+          text-transform: uppercase;
+          color: #ea9a2e;
+          text-shadow: 0 0 10px rgba(234,154,46,0.5), 0 1px 2px rgba(0,0,0,0.5);
+          background: linear-gradient(180deg, rgba(34,197,119,0.28), rgba(8,60,38,0.4));
+          border: 1px solid #34d399;
+          clip-path: polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);
+          -webkit-backdrop-filter: blur(4px);
+          backdrop-filter: blur(4px);
+          box-shadow: 0 0 0 4px rgba(34,197,119,0.12), 0 0 22px rgba(52,211,153,0.45),
+                      inset 0 1px 0 rgba(255,255,255,0.25), inset 0 0 18px rgba(52,211,153,0.18);
+          animation: csfc-acPulse 3.2s ease-in-out infinite;
+          transition: all 0.2s;
+          cursor: pointer;
+          white-space: nowrap;
+        }
+        .csfc-plasma-btn::after {
+          content: "";
+          position: absolute;
+          top: 0; bottom: 0; left: -40%;
+          width: 35%;
+          background: linear-gradient(100deg, transparent, rgba(190,255,230,0.45), transparent);
+          transform: skewX(-18deg);
+          animation: csfc-acSweep 3.6s ease-in-out infinite;
+          pointer-events: none;
+        }
+        .csfc-plasma-btn:hover {
+          background: linear-gradient(180deg, rgba(52,211,153,0.4), rgba(12,78,50,0.5));
+          color: #ffffff;
+          box-shadow: 0 0 0 4px rgba(34,197,119,0.2), 0 0 34px rgba(52,211,153,0.7),
+                      inset 0 1px 0 rgba(255,255,255,0.35), inset 0 0 22px rgba(52,211,153,0.28);
+        }
+        @keyframes csfc-acPulse {
+          0%, 100% {
+            box-shadow: 0 0 0 4px rgba(34,197,119,0.12), 0 0 22px rgba(52,211,153,0.4),
+                        inset 0 1px 0 rgba(255,255,255,0.25), inset 0 0 18px rgba(52,211,153,0.16);
+          }
+          50% {
+            box-shadow: 0 0 0 4px rgba(34,197,119,0.2), 0 0 32px rgba(52,211,153,0.62),
+                        inset 0 1px 0 rgba(255,255,255,0.32), inset 0 0 22px rgba(52,211,153,0.26);
+          }
+        }
+        @keyframes csfc-acSweep {
+          0% { left: -40%; }
+          55%, 100% { left: 130%; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .csfc-plasma-btn { animation: none; }
+          .csfc-plasma-btn::after { animation: none; display: none; }
+        }
       `}</style>
     </div>
   );
