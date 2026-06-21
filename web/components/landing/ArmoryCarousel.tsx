@@ -4,10 +4,11 @@ import { useCallback, useEffect, useState } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 import type { ShopProduct } from '@/lib/storefront';
+import { UniBevel } from '@/components/ds';
 
 const SHOP_URL = 'https://shop.crocodilesaucefc.com';
 
-/* ---- arrow icons ---- */
+/* ---- icons ---- */
 function ArrowLeft() {
   return (
     <svg width={20} height={20} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -34,92 +35,94 @@ function ExtIcon() {
 function ProductCard({ p }: { p: ShopProduct }) {
   const [hover, setHover] = useState(false);
   return (
-    <a
-      href={p.url}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-      style={{
-        display: 'block',
-        textDecoration: 'none',
-        background: hover ? 'var(--metal-bronze-lit)' : 'var(--metal-bronze)',
-        padding: '3px',
-        clipPath: 'var(--clip-card)',
-        transition: 'var(--transition-all)',
-        transform: hover ? 'translateY(-4px)' : 'none',
-        filter: hover
-          ? 'drop-shadow(0 0 14px rgb(207 154 82 / 0.4)) var(--shadow-metal)'
-          : 'var(--shadow-metal)',
-        height: '100%',
-      }}
-    >
-      <div
+    <UniBevel>
+      <a
+        href={p.url}
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
         style={{
-          background: 'linear-gradient(180deg, rgb(9 22 30 / 0.96), rgb(4 16 21 / 0.96))',
+          display: 'block',
+          textDecoration: 'none',
+          background: hover ? 'var(--metal-bronze-lit)' : 'var(--metal-bronze)',
+          padding: '3px',
           clipPath: 'var(--clip-card)',
-          padding: '1rem',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '0.7rem',
-          height: '100%',
+          transition: 'var(--transition-all)',
+          transform: hover ? 'translateY(-4px)' : 'none',
+          filter: hover
+            ? 'drop-shadow(0 0 14px rgb(207 154 82 / 0.4)) var(--shadow-metal)'
+            : 'var(--shadow-metal)',
         }}
       >
         <div
           style={{
-            position: 'relative',
-            aspectRatio: '3 / 4',
-            overflow: 'hidden',
-            background: 'radial-gradient(ellipse at 50% 40%, #14323a, #04141a)',
-            border: '1px solid var(--csfc-copper-30)',
+            background: 'linear-gradient(180deg, rgb(9 22 30 / 0.96), rgb(4 16 21 / 0.96))',
+            clipPath: 'var(--clip-card)',
+            padding: '0.5rem',
             display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            flexDirection: 'column',
+            gap: '0.5rem',
           }}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          {p.image && (
-            <img
-              src={p.image}
-              alt={p.imageAlt}
-              loading="lazy"
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'contain',
-                transform: hover ? 'scale(1.05)' : 'scale(1)',
-                transition: 'transform 0.4s var(--ease-out)',
-              }}
-            />
-          )}
+          {/* image — 4:5 ratio sits closer to square, matches portrait model shots */}
+          <div
+            style={{
+              position: 'relative',
+              aspectRatio: '4 / 5',
+              overflow: 'hidden',
+              background: 'radial-gradient(ellipse at 50% 40%, #14323a, #04141a)',
+              border: '1px solid var(--csfc-copper-30)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            {p.image && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={p.image}
+                alt={p.imageAlt}
+                loading="lazy"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'contain',
+                  transform: hover ? 'scale(1.05)' : 'scale(1)',
+                  transition: 'transform 0.4s var(--ease-out)',
+                }}
+              />
+            )}
+          </div>
+
+          {/* Shop Now button */}
+          <span
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.4rem',
+              padding: '0.5rem 1rem',
+              fontFamily: 'var(--font-display)',
+              fontWeight: 700,
+              fontSize: '0.6875rem',
+              textTransform: 'uppercase',
+              letterSpacing: 'var(--tracking-wide)',
+              color: '#241204',
+              background: 'var(--metal-bronze)',
+              clipPath: 'var(--clip-button)',
+              width: '100%',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            Shop Now
+            <span style={{ display: 'inline-flex', width: '1.05em', height: '1.05em' }}><ExtIcon /></span>
+          </span>
         </div>
-        {/* Shop Now button */}
-        <span
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '0.4rem',
-            padding: '0.5rem 1rem',
-            fontFamily: 'var(--font-display)',
-            fontWeight: 700,
-            fontSize: '0.6875rem',
-            textTransform: 'uppercase',
-            letterSpacing: 'var(--tracking-wide)',
-            color: '#241204',
-            background: 'var(--metal-bronze)',
-            clipPath: 'var(--clip-button)',
-            width: '100%',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          Shop Now
-          <span style={{ display: 'inline-flex', width: '1.05em', height: '1.05em' }}><ExtIcon /></span>
-        </span>
-      </div>
-    </a>
+      </a>
+    </UniBevel>
   );
 }
 
-/* ---- nav arrow button ---- */
+/* ---- nav arrow ---- */
 function NavBtn({ onClick, disabled, children, label }: {
   onClick: () => void; disabled: boolean; children: React.ReactNode; label: string;
 }) {
@@ -148,17 +151,49 @@ function NavBtn({ onClick, disabled, children, label }: {
   );
 }
 
-/* ---- main carousel ---- */
+/* ---- Shop All button ---- */
+function ShopAllBtn() {
+  return (
+    <a href={SHOP_URL} style={{ textDecoration: 'none', justifySelf: 'end' }}>
+      <span
+        style={{
+          display: 'inline-flex',
+          padding: '3px',
+          background: 'var(--metal-bronze)',
+          clipPath: 'var(--clip-button)',
+        }}
+      >
+        <span
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.55rem',
+            padding: '0.8rem 1.7rem',
+            background: 'var(--metal-bronze)',
+            clipPath: 'var(--clip-button)',
+            fontFamily: 'var(--font-display)',
+            fontWeight: 700,
+            fontSize: '0.8125rem',
+            textTransform: 'uppercase',
+            letterSpacing: 'var(--tracking-wide)',
+            color: '#241204',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          Shop All Kits
+          <span style={{ display: 'inline-flex', width: '1.05em', height: '1.05em' }}><ExtIcon /></span>
+        </span>
+      </span>
+    </a>
+  );
+}
+
+/* ---- carousel ---- */
 export function ArmoryCarousel({ products }: { products: ShopProduct[] }) {
   const autoplay = Autoplay({ delay: 3500, stopOnInteraction: false, stopOnMouseEnter: true });
 
   const [emblaRef, emblaApi] = useEmblaCarousel(
-    {
-      loop: true,
-      align: 'start',
-      dragFree: false,
-      skipSnaps: false,
-    },
+    { loop: true, align: 'start', dragFree: false, skipSnaps: false },
     [autoplay],
   );
 
@@ -192,22 +227,12 @@ export function ArmoryCarousel({ products }: { products: ShopProduct[] }) {
         onMouseDown={(e) => { (e.currentTarget as HTMLDivElement).style.cursor = 'grabbing'; }}
         onMouseUp={(e) => { (e.currentTarget as HTMLDivElement).style.cursor = 'grab'; }}
       >
-        <div
-          style={{
-            display: 'flex',
-            touchAction: 'pan-y pinch-zoom',
-            marginLeft: '-0.75rem',
-          }}
-        >
+        <div style={{ display: 'flex', touchAction: 'pan-y pinch-zoom', marginLeft: '-0.75rem' }}>
           {products.map((p) => (
             <div
               key={p.handle}
-              style={{
-                flex: '0 0 var(--slide-basis, 25%)',
-                minWidth: 0,
-                paddingLeft: '0.75rem',
-              }}
               className="armory-slide"
+              style={{ flex: '0 0 var(--slide-basis, 25%)', minWidth: 0, paddingLeft: '0.75rem' }}
             >
               <ProductCard p={p} />
             </div>
@@ -215,18 +240,17 @@ export function ArmoryCarousel({ products }: { products: ShopProduct[] }) {
         </div>
       </div>
 
-      {/* controls row */}
+      {/* controls — 3-col grid: empty | arrows (center) | Shop All (right) */}
       <div
         style={{
-          display: 'flex',
+          display: 'grid',
+          gridTemplateColumns: '1fr auto 1fr',
           alignItems: 'center',
-          justifyContent: 'space-between',
           marginTop: '1.6rem',
           gap: '1rem',
-          flexWrap: 'wrap',
         }}
       >
-        {/* prev/next */}
+        <span />
         <div style={{ display: 'flex', gap: '0.5rem' }}>
           <NavBtn onClick={scrollPrev} disabled={prevDisabled} label="Previous kits">
             <ArrowLeft />
@@ -235,42 +259,7 @@ export function ArmoryCarousel({ products }: { products: ShopProduct[] }) {
             <ArrowRight />
           </NavBtn>
         </div>
-
-        {/* shop all */}
-        <a href={SHOP_URL} style={{ textDecoration: 'none' }}>
-          <span
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.55rem',
-              padding: '3px',
-              background: 'var(--metal-bronze)',
-              clipPath: 'var(--clip-button)',
-              transition: 'var(--transition-all)',
-            }}
-          >
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.55rem',
-                padding: '0.8rem 1.7rem',
-                background: 'var(--metal-bronze)',
-                clipPath: 'var(--clip-button)',
-                fontFamily: 'var(--font-display)',
-                fontWeight: 700,
-                fontSize: '0.8125rem',
-                textTransform: 'uppercase',
-                letterSpacing: 'var(--tracking-wide)',
-                color: '#241204',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              Shop All Kits
-              <span style={{ display: 'inline-flex', width: '1.05em', height: '1.05em' }}><ExtIcon /></span>
-            </span>
-          </span>
-        </a>
+        <ShopAllBtn />
       </div>
 
       {/* responsive slide width */}
