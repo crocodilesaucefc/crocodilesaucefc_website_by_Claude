@@ -132,15 +132,14 @@ body { background: #04141a; color: var(--text-body); overflow-x: hidden; width: 
 .logo-free-mark { position: relative; isolation: isolate; display: block; }
 .lf-bronze { position: relative; z-index: 2; display: block; width: 100%; height: auto;
   filter: drop-shadow(0 9px 22px rgb(0 0 0 / 0.5)) drop-shadow(0 2px 1px rgb(0 0 0 / 0.5)); }
-/* green-glass HUD backing — matches the bright, digital 2026 WORLD SQUAD badge */
-.lf-panel { position: absolute; z-index: 0; left: -3%; right: -3%; top: -8%; bottom: -8%; pointer-events: none;
+/* green-glass HUD backing — matched to reference.html */
+.lf-panel { position: absolute; z-index: 0; left: -2%; right: -2%; top: -16%; bottom: -16%; pointer-events: none;
   background:
-    repeating-linear-gradient(0deg, rgb(52 211 153 / 0.06) 0 1px, transparent 1px 5px),
-    linear-gradient(180deg, rgb(21 128 61 / 0.26) 0%, rgb(8 40 36 / 0.14) 50%, rgb(21 128 61 / 0.26) 100%);
+    repeating-linear-gradient(0deg, rgb(52 211 153 / 0.05) 0 1px, transparent 1px 5px),
+    rgb(34 197 119 / 0.26);
   -webkit-backdrop-filter: blur(7px); backdrop-filter: blur(7px);
-  border-top: 1px solid rgb(52 211 153 / 0.55); border-bottom: 1px solid rgb(52 211 153 / 0.55);
-  box-shadow: 0 -1px 9px rgb(52 211 153 / 0.22), 0 1px 9px rgb(52 211 153 / 0.22),
-              0 0 20px rgb(52 211 153 / 0.1), inset 0 0 42px rgb(52 211 153 / 0.08); }
+  border-top: 1px solid rgb(52 211 153 / 0.4); border-bottom: 1px solid rgb(52 211 153 / 0.4);
+  box-shadow: inset 0 0 26px rgb(6 16 22 / 0.4); }
 /* Wordmark plate sheen — Option C: sweep + glints (sheen.css) */
 .lf-panel { overflow: hidden; }
 .lf-panel::after {
@@ -169,7 +168,7 @@ body { background: #04141a; color: var(--text-body); overflow-x: hidden; width: 
 .logo-free-mark .lf-glow { display: none; }
 
 /* HUD detailing layered over the clean rectangle (shape stays square) */
-.lf-deco { position: absolute; z-index: 2; inset: -8% -3%; pointer-events: none; }
+.lf-deco { position: absolute; z-index: 2; inset: -16% -2%; pointer-events: none; }
 /* corner L-brackets */
 .lf-deco .cn { position: absolute; width: 16px; height: 16px; }
 .lf-deco .cn::before, .lf-deco .cn::after { content: ""; position: absolute; background: rgb(52 211 153 / 0.85); box-shadow: 0 0 6px rgb(52 211 153 / 0.6); }
